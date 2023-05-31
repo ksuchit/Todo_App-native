@@ -6,8 +6,9 @@ import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Button, Image, Pressable, StyleSheet, Text, Touchable, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, Touchable, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { Button } from "./Button";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -58,7 +59,7 @@ function GoogleLogin() {
   }
 
   return (
-    <View>
+    <View style={{display:"flex",justifyContent:'center',alignItems:'center'}}>
       {/* <Text>{JSON.stringify(userInfo, null, 2)}</Text> */}
       {/* <Text>Social Login</Text> */}
       <Button

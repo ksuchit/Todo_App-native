@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import GoogleLogin from "./GoogleLogin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LoginButton } from "./Button";
+// import { Button } from "./Button";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,21 +26,32 @@ function Login() {
     console.log("onSubmit");
     console.log("email",  email);
     console.log("password",  password);
-    // setSubmit(true);
+    setSubmit(true);
     try {
       const user = await AsyncStorage.getItem("@user")
       console.log("user", JSON.parse(user))
-      if(JSON.parse(user).email===email && JSON.parse(user).password===password)
-        navigation.navigate('Todo')
-      else
-        Alert.alert("Failed", "Email or password does not match")
+      if (user) {
+        if (JSON.parse(user).email === email && JSON.parse(user).password === password) {
+          navigation.navigate('Todo')
+  
+           //refresh the User Inputs
+          setEmail("")
+          setPassword("")
+        }
+        else {
+          if(email && password)
+          Alert.alert("Failed", "Email or password does not match")
+        }
+      }
+      else {
+        if(email && password)
+        Alert.alert('Failed','User not Found')
+      }
     } catch (error) {
       
     }
 
-    //refresh the User Inputs
-    setEmail("")
-    setPassword("")
+   
   };
 
   return (
@@ -68,8 +81,8 @@ function Login() {
           <Text style={styles.errorText}>Password Required</Text>
         )}
       </View>
-      <View style={{marginTop:10}}>
-      <Button color="#3740FE" onPress={onSubmit} title="Submit" />
+      <View style={{marginTop:5,}}>
+      <LoginButton color="#3740FE" onPress={onSubmit} title="LOGIN" />
       </View>
       <View style={styles.footerContainer}>
       <Text style={styles.footerText1}>Don't have account?</Text>

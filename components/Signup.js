@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { LoginButton } from "./Button";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -73,10 +74,10 @@ function Signup() {
         )}
       </View>
       <View style={{marginTop:10}}>
-      <Button
+      <LoginButton
               color="#3740FE"
               onPress={onSubmit}
-              title="Submit"
+              title="SIGNUP"
           />
        </View>
       <Pressable>

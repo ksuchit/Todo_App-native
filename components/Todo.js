@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Button,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,27 +13,30 @@ import {
 import TodoList from "./TodoList";
 import { useNavigation } from "@react-navigation/native";
 import StatusModal from "./StatusModal";
+import { Button, DeleteButton, SignoutButton, UpdateButton } from "./Button";
 
 function Todo() {
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
+  const [uTitle, setUTitle] = useState("");
+  const [uDetails, setUDetails] = useState("");
   const [task, setTask] = useState([]);
   const [update, setUpdate] = useState(-1);
   const [user, setUser] = useState();
-  const [show, setShow] = useState(false)
-  const [status, setStatus] = useState('InProgress')
-  const [index,setIndex]=useState(-1)
+  const [show, setShow] = useState(false);
+  const [status, setStatus] = useState("InProgress");
+  const [index, setIndex] = useState(-1);
   const navigation = useNavigation();
 
   useEffect(() => {
     task.map((data, i) => {
       if (i === index) {
-        data.status=status
+        data.status = status;
       }
-      return data
-    })
-    console.log(status)
-  },[status])
+      return data;
+    });
+    console.log(status);
+  }, [status]);
 
   const getData = async () => {
     try {
@@ -83,7 +85,7 @@ function Todo() {
           {
             title: title,
             details: details,
-            status:"No Status"
+            status: "No Status",
           },
         ]);
       } else {
@@ -91,28 +93,35 @@ function Todo() {
           {
             title: title,
             details: details,
-            status:"No Status"
+            status: "No Status",
           },
         ]);
       }
+
+      //refresh your user inputs
+      setTitle("");
+      setDetails("");
     } else {
       Alert.alert("Warning", "Title or Details field is Empty");
     }
-
-    //refresh your user inputs
-    setTitle("");
-    setDetails("");
   };
 
   const onDelete = (index) => {
-    setTask(task.filter((data, i) => index !== i));
-    Alert.alert("Success", "Successfully deleted");
+    // setTask(task.filter((data, i) => index !== i));
+    // Alert.alert("Success", "Successfully deleted");
+    Alert.alert("Alert", "Are You Sure?", [
+      { text: "Cancel" },
+      {
+        text: "Delete",
+        onPress: () => setTask(task.filter((data, i) => index !== i)),
+      },
+    ]);
   };
 
   const onUpdate = (index, data) => {
     setUpdate(index);
-    setDetails(data.details);
-    setTitle(data.title);
+    setUDetails(data.details);
+    setUTitle(data.title);
   };
 
   return (
@@ -120,8 +129,8 @@ function Todo() {
       <View style={styles.container}>
         <View style={styles.head}>
           <Text style={styles.heading}>Welcome to Todo</Text>
-          <Button
-            title="Signout"
+          <SignoutButton
+            title="LOGOUT"
             onPress={async () => {
               await AsyncStorage.clear();
               navigation.navigate("Login");
@@ -145,20 +154,35 @@ function Todo() {
           value={details}
           onChangeText={(newText) => setDetails(newText)}
         />
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: 10,
+          }}
+        >
+          <Button onPress={addTodo} title="ADD TASK" />
+        </View>
 
-        <Button onPress={addTodo} title="Add Task" style={styles.btn} />
+        <View
+          style={{
+            borderBottomColor: "black",
+            borderWidth: 2,
+          }}
+        />
 
         <View style={styles.taskContainer}>
           {task?.map((data, index) =>
             index === update ? (
-              <>
+              <View style={styles.updateContainer}>
                 <Text style={styles.inputTitle}>Title</Text>
                 <TextInput
                   type="text"
                   placeholder="Enter heading"
-                  style={styles.inputField}
+                  style={[styles.inputField]}
                   defaultValue={data.title}
-                  onChangeText={(newText) => setTitle(newText)}
+                  onChangeText={(newText) => setUTitle(newText)}
                 />
                 <Text style={styles.inputTitle}>Task Details</Text>
                 <TextInput
@@ -167,50 +191,80 @@ function Todo() {
                   placeholder="Task Details"
                   style={styles.inputField}
                   defaultValue={data.details}
-                  onChangeText={(newText) => setDetails(newText)}
+                  onChangeText={(newText) => setUDetails(newText)}
                 />
-
-                <Button
-                  onPress={() => {
-                    setTask((prev) =>
-                      prev.map((upItem, index) => {
-                        if (index === update) {
-                          upItem.title = title;
-                          upItem.details = details;
-                        }
-                        return upItem;
-                      })
-                    );
-
-                    setUpdate("");
-                    setDetails("");
-                    setTitle("");
-
-                    Alert.alert("Success", "Successfully Updated");
+                <View
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
-                  title="Save"
-                  style={styles.btn}
-                />
-              </>
+                >
+                  <Button
+                    onPress={() => {
+                      setTask((prev) =>
+                        prev.map((upItem, index) => {
+                          if (index === update) {
+                            upItem.title = uTitle;
+                            upItem.details = uDetails;
+                          }
+                          return upItem;
+                        })
+                      );
+
+                      setUpdate("");
+                      setUDetails("");
+                      setUTitle("");
+
+                      Alert.alert("Success", "Successfully Updated");
+                    }}
+                    title="UPDATE"
+                    style={styles.btn}
+                  />
+                </View>
+              </View>
             ) : task?.length > 0 ? (
               <View style={styles.task} key={index}>
-                <View style={{display:"flex",flexDirection:'row',justifyContent:'space-between'}}>
-                    <Text style={styles.inputTitle}>{data.title?.length >15 ?`${data.title?.slice(0,15)}...` : data.title}</Text>
-                    <Pressable onPress={() => {
-                      setShow(true)
-                      setIndex(index)
-                    }}>
-                      <View >
-                        {data.status==='InProgress' ?
-                          <Text style={[styles.inProgress,styles.status]} > {data.status}</Text>
-                          : data.status === 'Pending' ?
-                            <Text style={[styles.pending,styles.status]} > {data.status}</Text> :
-                            data.status === 'Complete' ?
-                              <Text style={[styles.complete,styles.status]} > {data.status}</Text> :
-                              <Text style={styles.status}> {data.status}</Text>
-                  }
-                      </View>
-                    </Pressable>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={styles.inputTitle}>
+                    {data.title?.length > 15
+                      ? `${data.title?.slice(0, 15)}...`
+                      : data.title}
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setShow(true);
+                      setIndex(index);
+                      setStatus(data.status);
+                    }}
+                  >
+                    <View>
+                      {data.status === "InProgress" ? (
+                        <Text style={[styles.inProgress, styles.status]}>
+                          {" "}
+                          {data.status}
+                        </Text>
+                      ) : data.status === "Pending" ? (
+                        <Text style={[styles.pending, styles.status]}>
+                          {" "}
+                          {data.status}
+                        </Text>
+                      ) : data.status === "Complete" ? (
+                        <Text style={[styles.complete, styles.status]}>
+                          {" "}
+                          {data.status}
+                        </Text>
+                      ) : (
+                        <Text style={styles.status}> {data.status}</Text>
+                      )}
+                    </View>
+                  </Pressable>
                 </View>
                 <View
                   style={{
@@ -223,12 +277,14 @@ function Todo() {
                   {data.details}
                 </Text>
                 <View style={{ display: "flex", flexDirection: "row", gap: 5 }}>
-                  <Button
+                  <UpdateButton
                     title="UPDATE"
                     onPress={() => onUpdate(index, data)}
                   />
-                    {/* <Button title="DELETE" onPress={() => onDelete(index)} /> */}
-                    <Button title="DELETE"  onPress={()=> onDelete(index)}/>
+                  <DeleteButton
+                    title="DELETE"
+                    onPress={() => onDelete(index)}
+                  />
                 </View>
               </View>
             ) : (
@@ -240,17 +296,28 @@ function Todo() {
         </View>
         {/* <TodoList /> */}
       </View>
-      <StatusModal show={show} setShow={setShow}  setStatus={setStatus} />
+      <StatusModal
+        show={show}
+        setShow={setShow}
+        status={status}
+        setStatus={setStatus}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 2,
-    borderColor: "grey",
-    borderRadius: 10,
+    // borderWidth: 2,
+    // borderColor: "grey",
+    // borderRadius: 10,
     padding: 25,
+  },
+  updateContainer: {
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 20,
+    width: "100%",
   },
   head: {
     display: "flex",
@@ -266,7 +333,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   inputField: {
-    width: 300,
+    width: "90%",
     fontSize: 15,
     padding: 10,
     marginTop: 10,
@@ -284,16 +351,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderWidth: 1,
     padding: 3,
-    borderRadius:5,
+    borderRadius: 5,
   },
   complete: {
-    backgroundColor:'green'
+    backgroundColor: "green",
+    color: "white",
+    borderColor: "green",
   },
   inProgress: {
-    backgroundColor:'#00b7ff'
+    backgroundColor: "#2196F3",
+    color: "white",
+    borderColor: "#2196F3",
   },
   pending: {
-    backgroundColor:'red'
+    backgroundColor: "#F08080",
+    color: "white",
+    borderColor: "#F08080",
   },
   btn: {
     alignItems: "center",
@@ -310,7 +383,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexWrap: "wrap",
     padding: 5,
-    marginTop: 5,
+    marginTop: 20,
+    gap: 20,
   },
   task: {
     borderWidth: 1,
@@ -318,7 +392,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 5,
     borderRadius: 5,
-    width: 300,
+    width: "100%",
   },
 });
 
