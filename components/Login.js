@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import GoogleLogin from "./GoogleLogin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,47 +11,56 @@ function Login() {
   const [password, setPassword] = useState("");
   const [submit, setSubmit] = useState(false);
 
-  const navigation=useNavigation()
-    
-  const isAlredyThere = async() => {
-    const user = await AsyncStorage.getItem("@user")
-    if (user)
-      navigation.navigate("Todo")
-  }
-  useEffect(() => {
-    isAlredyThere()
-  }, [])
+  const navigation = useNavigation();
 
-  const onSubmit = async() => {
+  const isAlredyThere = async () => {
+    const user = await AsyncStorage.getItem("@user");
+    if (user) navigation.navigate("Todo");
+  };
+  useEffect(() => {
+    isAlredyThere();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions ,refresh the User Inputs
+        setEmail("");
+        setPassword("");
+        setSubmit(false);
+      };
+    }, [])
+  );
+
+  const onSubmit = async () => {
     console.log("onSubmit");
-    console.log("email",  email);
-    console.log("password",  password);
+    console.log("email", email);
+    console.log("password", password);
     setSubmit(true);
     try {
-      const user = await AsyncStorage.getItem("@user")
-      console.log("user", JSON.parse(user))
+      const user = await AsyncStorage.getItem("@user");
+      console.log("user", JSON.parse(user));
       if (user) {
-        if (JSON.parse(user).email === email && JSON.parse(user).password === password) {
-          navigation.navigate('Todo')
-  
-           //refresh the User Inputs
-          setEmail("")
-          setPassword("")
-        }
-        else {
-          if(email && password)
-          Alert.alert("Failed", "Email or password does not match")
-        }
-      }
-      else {
-        if(email && password)
-        Alert.alert('Failed','User not Found')
-      }
-    } catch (error) {
-      
-    }
+        if (
+          JSON.parse(user).email === email &&
+          JSON.parse(user).password === password
+        ) {
+          navigation.navigate("Todo");
 
-   
+          //refresh the User Inputs
+          setEmail("");
+          setPassword("");
+        } else {
+          if (email && password)
+            Alert.alert("Failed", "Email or password does not match");
+        }
+      } else {
+        if (email && password) Alert.alert("Failed", "User not Found");
+      }
+    } catch (error) {}
   };
 
   return (
@@ -81,17 +90,21 @@ function Login() {
           <Text style={styles.errorText}>Password Required</Text>
         )}
       </View>
-      <View style={{marginTop:5,}}>
-      <LoginButton color="#3740FE" onPress={onSubmit} title="LOGIN" />
+      <View style={{ marginTop: 5 }}>
+        <LoginButton color="#3740FE" onPress={onSubmit} title="LOGIN" />
       </View>
       <View style={styles.footerContainer}>
-      <Text style={styles.footerText1}>Don't have account?</Text>
-          <Text style={styles.footerText}
-            onPress={()=>navigation.navigate('Signup')}
-          >
-         Click here to signup
-      </Text>
-          </View>
+        <Text style={styles.footerText1}>Don't have account?</Text>
+        <Text
+          style={styles.footerText}
+          onPress={() => {
+            console.log("navigation");
+            navigation.navigate("Signup");
+          }}
+        >
+          Click here to signup
+        </Text>
+      </View>
       <GoogleLogin />
     </View>
   );
@@ -103,7 +116,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: '#f0f0f5',
+    backgroundColor: "#f0f0f5",
   },
   inputBox: {
     padding: 10,
@@ -112,11 +125,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     fontSize: 15,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     shadowColor: "#101012",
     shadowOffset: {
-        width: 2,
-        height: 2,
+      width: 2,
+      height: 2,
     },
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
@@ -125,7 +138,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    fontSize:15
+    fontSize: 15,
   },
   heading: {
     fontSize: 32,
@@ -134,9 +147,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   footerContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
     fontSize: 32,
   },
   footerText: {
@@ -150,7 +163,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: "bold",
     marginBottom: 30,
-    marginRight:5
+    marginRight: 5,
   },
   errorText: {
     color: "red",

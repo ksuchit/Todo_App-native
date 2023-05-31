@@ -14,6 +14,7 @@ import TodoList from "./TodoList";
 import { useNavigation } from "@react-navigation/native";
 import StatusModal from "./StatusModal";
 import { Button, DeleteButton, SignoutButton, UpdateButton } from "./Button";
+import Tabs from "./Tabs";
 
 function Todo() {
   const [title, setTitle] = useState("");
@@ -29,7 +30,7 @@ function Todo() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    task.map((data, i) => {
+    task?.map((data, i) => {
       if (i === index) {
         data.status = status;
       }
@@ -98,6 +99,7 @@ function Todo() {
         ]);
       }
 
+      // navigation.navigate('Tab')
       //refresh your user inputs
       setTitle("");
       setDetails("");
@@ -107,8 +109,6 @@ function Todo() {
   };
 
   const onDelete = (index) => {
-    // setTask(task.filter((data, i) => index !== i));
-    // Alert.alert("Success", "Successfully deleted");
     Alert.alert("Alert", "Are You Sure?", [
       { text: "Cancel" },
       {
@@ -125,7 +125,8 @@ function Todo() {
   };
 
   return (
-    <ScrollView style={{ height: "90%" }}>
+    <>
+    <ScrollView style={{ height: "90%" ,position:'relative'}}>
       <View style={styles.container}>
         <View style={styles.head}>
           <Text style={styles.heading}>Welcome to Todo</Text>
@@ -175,7 +176,7 @@ function Todo() {
         <View style={styles.taskContainer}>
           {task?.map((data, index) =>
             index === update ? (
-              <View style={styles.updateContainer}>
+              <View style={styles.updateContainer} key={index}>
                 <Text style={styles.inputTitle}>Title</Text>
                 <TextInput
                   type="text"
@@ -303,6 +304,8 @@ function Todo() {
         setStatus={setStatus}
       />
     </ScrollView>
+        {/* <Tabs /> */}
+    </>
   );
 }
 

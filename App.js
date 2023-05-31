@@ -10,6 +10,7 @@ import TodoList from './components/TodoList';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import 'react-native-gesture-handler';
+import Tabs from './components/Tabs';
 
 const Stack = createNativeStackNavigator()
 
@@ -50,7 +51,16 @@ function MyStack() {
          
        }
       />
+      <Stack.Screen 
+       name="Tab" 
+       component={Tabs} 
+       options={
+         { title: 'Tab' }
+         
+       }
+      />
     </Stack.Navigator>
+    
   );
 }
 

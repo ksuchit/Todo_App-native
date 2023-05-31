@@ -12,14 +12,14 @@ function Signup() {
 
   const navigation=useNavigation()
   
-  const isAlredyThere = async() => {
-    const user = await AsyncStorage.getItem("@user")
-    if (user)
-      navigation.navigate("Todo")
-  }
-  useEffect(() => {
-    isAlredyThere()
-  }, [])
+  // const isAlredyThere = async() => {
+  //   const user = await AsyncStorage.getItem("@user")
+  //   if (user)
+  //     navigation.navigate("Todo")
+  // }
+  // useEffect(() => {
+  //   isAlredyThere()
+  // }, [])
   
   const onSubmit = () => {
       console.log("onSubmit");
