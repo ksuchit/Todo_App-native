@@ -11,6 +11,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import 'react-native-gesture-handler';
 import Tabs from './components/Tabs';
+import BottomTabs from './components/BottomTabs';
 
 const Stack = createNativeStackNavigator()
 
@@ -45,7 +46,7 @@ function MyStack() {
       />
       <Stack.Screen 
        name="Todo" 
-       component={Todo} 
+       component={BottomTabs} 
        options={
          { title: 'Todo' }
          

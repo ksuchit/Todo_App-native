@@ -19,35 +19,35 @@ import Tabs from "./Tabs";
 function Todo() {
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
-  const [uTitle, setUTitle] = useState("");
-  const [uDetails, setUDetails] = useState("");
+  // const [uTitle, setUTitle] = useState("");
+  // const [uDetails, setUDetails] = useState("");
   const [task, setTask] = useState([]);
-  const [update, setUpdate] = useState(-1);
+  // const [update, setUpdate] = useState(-1);
   const [user, setUser] = useState();
-  const [show, setShow] = useState(false);
-  const [status, setStatus] = useState("InProgress");
-  const [index, setIndex] = useState(-1);
+  // const [show, setShow] = useState(false);
+  // const [status, setStatus] = useState("InProgress");
+  // const [index, setIndex] = useState(-1);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    task?.map((data, i) => {
-      if (i === index) {
-        data.status = status;
-      }
-      return data;
-    });
-    console.log(status);
-  }, [status]);
+  // useEffect(() => {
+  //   task?.map((data, i) => {
+  //     if (i === index) {
+  //       data.status = status;
+  //     }
+  //     return data;
+  //   });
+  //   console.log(status);
+  // }, [status]);
 
-  const getData = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("todo");
-      setTask(JSON.parse(jsonValue));
-      return jsonValue != null ? JSON.parse(jsonValue) : [];
-    } catch (e) {
-      // error reading value
-    }
-  };
+  // const getData = async () => {
+  //   try {
+  //     const jsonValue = await AsyncStorage.getItem("todo");
+  //     setTask(JSON.parse(jsonValue));
+  //     return jsonValue != null ? JSON.parse(jsonValue) : [];
+  //   } catch (e) {
+  //     // error reading value
+  //   }
+  // };
 
   const getUserFromStorage = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -55,7 +55,7 @@ function Todo() {
   };
 
   useEffect(() => {
-    getData();
+    // getData();
     getUserFromStorage();
   }, []);
 
@@ -108,35 +108,28 @@ function Todo() {
     }
   };
 
-  const onDelete = (index) => {
-    Alert.alert("Alert", "Are You Sure?", [
-      { text: "Cancel" },
-      {
-        text: "Delete",
-        onPress: () => setTask(task.filter((data, i) => index !== i)),
-      },
-    ]);
-  };
+  // const onDelete = (index) => {
+  //   Alert.alert("Alert", "Are You Sure?", [
+  //     { text: "Cancel" },
+  //     {
+  //       text: "Delete",
+  //       onPress: () => setTask(task.filter((data, i) => index !== i)),
+  //     },
+  //   ]);
+  // };
 
-  const onUpdate = (index, data) => {
-    setUpdate(index);
-    setUDetails(data.details);
-    setUTitle(data.title);
-  };
+  // const onUpdate = (index, data) => {
+  //   setUpdate(index);
+  //   setUDetails(data.details);
+  //   setUTitle(data.title);
+  // };
 
   return (
     <>
-    <ScrollView style={{ height: "90%" ,position:'relative'}}>
+    <ScrollView style={{ position:'relative',backgroundColor:'#f0f0f5'}}>
       <View style={styles.container}>
         <View style={styles.head}>
           <Text style={styles.heading}>Welcome to Todo</Text>
-          <SignoutButton
-            title="LOGOUT"
-            onPress={async () => {
-              await AsyncStorage.clear();
-              navigation.navigate("Login");
-            }}
-          />
         </View>
         <Text style={styles.inputTitle}>Title</Text>
         <TextInput
@@ -166,14 +159,14 @@ function Todo() {
           <Button onPress={addTodo} title="ADD TASK" />
         </View>
 
-        <View
+        {/* <View
           style={{
             borderBottomColor: "black",
             borderWidth: 2,
           }}
-        />
+        /> */}
 
-        <View style={styles.taskContainer}>
+        {/* <View style={styles.taskContainer}>
           {task?.map((data, index) =>
             index === update ? (
               <View style={styles.updateContainer} key={index}>
@@ -294,15 +287,15 @@ function Todo() {
               </View>
             )
           )}
-        </View>
+        </View> */}
         {/* <TodoList /> */}
       </View>
-      <StatusModal
+      {/* <StatusModal
         show={show}
         setShow={setShow}
         status={status}
         setStatus={setStatus}
-      />
+      /> */}
     </ScrollView>
         {/* <Tabs /> */}
     </>
@@ -313,8 +306,10 @@ const styles = StyleSheet.create({
   container: {
     // borderWidth: 2,
     // borderColor: "grey",
-    // borderRadius: 10,
+    // borderRadius: 20,
     padding: 25,
+    backgroundColor: '#f0f0f5',
+    height: "100%",
   },
   updateContainer: {
     borderWidth: 2,
@@ -326,7 +321,8 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    marginBottom:20
   },
   heading: {
     fontSize: 25,

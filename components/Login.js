@@ -10,7 +10,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submit, setSubmit] = useState(false);
-
+  const [users,setUsers]=useState([])
   const navigation = useNavigation();
 
   const isAlredyThere = async () => {
@@ -21,10 +21,14 @@ function Login() {
     isAlredyThere();
   }, []);
 
+  const getUsers = async() => {
+    const user = await AsyncStorage.getItem("@reg-user")
+    setUsers(user)
+  }
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-
+      getUsers()
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions ,refresh the User Inputs
@@ -34,6 +38,8 @@ function Login() {
       };
     }, [])
   );
+
+  console.log("users",users)
 
   const onSubmit = async () => {
     console.log("onSubmit");
