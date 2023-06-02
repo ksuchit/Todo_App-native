@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { Button, SignoutButton } from "./Button";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Button } from "./Button";
 import { Button as ButtonEle } from "@rneui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
@@ -14,15 +14,38 @@ function Profile() {
   const getUserFromStorage = async () => {
     const user = await AsyncStorage.getItem("@user");
     setUser(JSON.parse(user));
+
+    const parsedUser=JSON.parse(user)
+    const todo = await AsyncStorage.getItem("todo");
+    const parsedTodo = JSON.parse(todo);
+    const currentUser = parsedTodo.find(
+      (data) => Object.keys(data)[0] === parsedUser.email
+    );
+    // console.log("userEmail", user.email);
+    // console.log("currentUser", currentUser[user.email]);
+
+    currentUser[parsedUser.email].map((data) => {
+      if (data.status === "Complete") setCompleted((cnt) => cnt + 1);
+      else if (data.status === "Pending") setPending((cnt) => cnt + 1);
+
+      return data;
+    });
   };
 
-  useEffect(() => {
-    getUserFromStorage();
-  }, []);
+  // useEffect(() => {
+  //   getUserFromStorage();
+  // }, []);
 
   const getData = async () => {
-    const data = await AsyncStorage.getItem("todo");
-    JSON.parse(data).map((data, i) => {
+    const todo = await AsyncStorage.getItem("todo");
+    const parsedTodo = JSON.parse(todo);
+    const currentUser = parsedTodo.find(
+      (data) => Object.keys(data)[0] === user.email
+    );
+    // console.log("userEmail", user.email);
+    // console.log("currentUser", currentUser[user.email]);
+
+    currentUser[user.email].map((data) => {
       if (data.status === "Complete") setCompleted((cnt) => cnt + 1);
       else if (data.status === "Pending") setPending((cnt) => cnt + 1);
 
@@ -32,17 +55,18 @@ function Profile() {
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-      getData();
+      getUserFromStorage()
+      // getData();
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
-        setCompleted(0)
-        setPending(0)
+        setCompleted(0);
+        setPending(0);
       };
     }, [])
   );
   console.log("Profile", user);
-  console.log("TODO data", completed,pending);
+  console.log("TODO data", completed, pending);
 
   return (
     <View style={styles.container}>
@@ -82,6 +106,9 @@ function Profile() {
           onPress={async () => {
             await AsyncStorage.removeItem("@user");
             navigation.navigate("Login");
+            Alert.alert("Success", "Successfully Signout");
+            // await AsyncStorage.removeItem("todo")
+            // Alert.alert('Todo cleared')
           }}
         />
       </View>

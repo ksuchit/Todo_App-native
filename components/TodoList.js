@@ -12,7 +12,7 @@ import {
 import { Button, DeleteButton, UpdateButton } from "./Button";
 import StatusModal from "./StatusModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -22,17 +22,27 @@ function TodoList() {
   const [update, setUpdate] = useState(-1);
   const [uTitle, setUTitle] = useState("");
   const [uDetails, setUDetails] = useState("");
+  const [user, setUser] = useState("");
+  const [parseData, setParseData] = useState([]);
+  const navigation = useNavigation();
 
-  const navigation=useNavigation()
+  const getUser = async () => {
+    const user = await AsyncStorage.getItem("@user");
+    const userDetails = JSON.parse(user);
+    setUser(userDetails.email);
+  };
 
   const getData = async () => {
     const data = await AsyncStorage.getItem("todo");
-    setTask(JSON.parse(data));
+    const parseData = JSON.parse(data);
+    console.log("parseData", parseData);
+    setParseData(parseData);
   };
 
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
+      getUser();
       getData();
       return () => {
         // Do something when the screen is unfocused
@@ -40,6 +50,20 @@ function TodoList() {
       };
     }, [])
   );
+
+  task.map((data) => {
+    if (Object.keys(data)[0] === user) console.log("TODOLIST task", data);
+    return data;
+  });
+
+  useEffect(() => {
+    console.log("parseData", parseData);
+    if (parseData.length > 0) {
+      const parseObj = parseData.find((item) => Object.keys(item)[0] === user);
+      console.log("final data", parseObj[user]);
+      setTask(parseObj[user]);
+    }
+  }, [parseData]);
 
   useEffect(() => {
     task?.map((data, i) => {
@@ -53,12 +77,23 @@ function TodoList() {
 
   const updateData = async (value) => {
     try {
-      await AsyncStorage.setItem("todo", JSON.stringify(value));
+      console.log("value", value)
+      const AllData = await AsyncStorage.getItem("todo")
+      const parseAllData = JSON.parse(AllData)
+      const updatedData=parseAllData.map((data) => {
+        if (Object.keys(data)[0] === user)
+          data[user] = value
+        
+        return data
+      })
+      console.log("updatedData",JSON.stringify(updatedData))
+      console.log("after")
+      await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
     } catch (error) {}
   };
   useEffect(() => {
     updateData(task);
-  }, [update, task,status]);
+  }, [update, task, status]);
 
   const onDelete = (index) => {
     Alert.alert("Alert", "Are You Sure?", [
@@ -125,8 +160,7 @@ function TodoList() {
                         setUTitle("");
 
                         Alert.alert("Success", "Successfully Updated");
-                      }
-                      else {
+                      } else {
                         Alert.alert("Warning", "Empty fields not Allowed");
                       }
                     }}
@@ -207,15 +241,16 @@ function TodoList() {
           )}
         </View>
       ) : (
-          <View style={styles.noTask}>
-            <Text style={styles.noTaskText}>No Task Added</Text>
-            <Pressable>
-            <MaterialIcons name="add-task" size={30} color='#2196F3'
-              onPress={() => {
-                navigation.navigate('Todo')
-              }}
+        <View style={styles.noTask}>
+          <Text style={styles.noTaskText}>No Task Added</Text>
+          <Pressable>
+            <MaterialIcons
+              name="add-task"
+              size={30}
+              color="#2196F3"
+              onPress={() => navigation.navigate("Todo")}
             />
-            </Pressable>
+          </Pressable>
         </View>
       )}
       <StatusModal
@@ -230,7 +265,7 @@ function TodoList() {
 
 const styles = StyleSheet.create({
   todoContainer: {
-    backgroundColor:'#f0f0f5'
+    backgroundColor: "#f0f0f5",
   },
   taskContainer: {
     display: "flex",
@@ -246,7 +281,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderRadius: 10,
     width: "100%",
-    backgroundColor:'#dadae3'
+    backgroundColor: "#dadae3",
   },
   updateContainer: {
     borderWidth: 2,
@@ -292,15 +327,15 @@ const styles = StyleSheet.create({
   },
   noTask: {
     display: "flex",
-    flexDirection:"row",
+    flexDirection: "row",
     justifyContent: "center",
-    alignItems: 'center',
+    alignItems: "center",
     margin: 40,
-    gap:10
+    gap: 10,
   },
   noTaskText: {
     fontWeight: 700,
-    color:'red'
+    color: "red",
   },
 });
 

@@ -10,25 +10,25 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submit, setSubmit] = useState(false);
-  const [users,setUsers]=useState([])
+  const [users, setUsers] = useState([]);
   const navigation = useNavigation();
 
   const isAlredyThere = async () => {
     const user = await AsyncStorage.getItem("@user");
     if (user) navigation.navigate("Todo");
   };
-  useEffect(() => {
-    isAlredyThere();
-  }, []);
 
-  const getUsers = async() => {
-    const user = await AsyncStorage.getItem("@reg-user")
-    setUsers(user)
-  }
+  const getUsers = async () => {
+    const user = await AsyncStorage.getItem("@reg-user");
+    setUsers(JSON.parse(user));
+  };
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
-      getUsers()
+      getUsers();
+      isAlredyThere() //it avoids to go back login when user is there...
+
+      // AsyncStorage.clear()  //it will clean the storage
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions ,refresh the User Inputs
@@ -39,7 +39,7 @@ function Login() {
     }, [])
   );
 
-  console.log("users",users)
+  console.log("users", users);
 
   const onSubmit = async () => {
     console.log("onSubmit");
@@ -47,13 +47,11 @@ function Login() {
     console.log("password", password);
     setSubmit(true);
     try {
-      const user = await AsyncStorage.getItem("@user");
-      console.log("user", JSON.parse(user));
-      if (user) {
-        if (
-          JSON.parse(user).email === email &&
-          JSON.parse(user).password === password
-        ) {
+      const currentUser = users?.find((data) => data.email === email);
+      console.log("user",currentUser)
+      if (currentUser) {
+        if (currentUser.email === email && currentUser.password === password) {
+          AsyncStorage.setItem('@user',JSON.stringify(currentUser))
           navigation.navigate("Todo");
 
           //refresh the User Inputs
@@ -66,7 +64,9 @@ function Login() {
       } else {
         if (email && password) Alert.alert("Failed", "User not Found");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Submit error",error)
+    }
   };
 
   return (
