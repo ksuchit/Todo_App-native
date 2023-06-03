@@ -25,7 +25,7 @@ function BottomTabs() {
         }}
       />
       <Tab.Screen
-        name="Notifications"
+        name="Tasks"
         component={TodoList}
         options={{
           tabBarLabel: 'Tasks',
