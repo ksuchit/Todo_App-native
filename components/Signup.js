@@ -37,7 +37,7 @@ function Signup() {
   const onSubmit = async () => {
     console.log("onSubmit");
     setSubmit(true);
-    if (email && password && name) {
+    if (email && password && name && (/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g).test(email)) {
       if (users?.length > 0)
         await AsyncStorage.setItem(
           "@reg-user",
@@ -83,6 +83,9 @@ function Signup() {
         {submit && !email && (
           <Text style={styles.errorText}>Email Required</Text>
         )}
+        {submit && !(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g).test(email) &&
+          <Text style={styles.errorText}>Enter Valid Email</Text>
+        }
       </View>
       <View>
         <Text style={styles.label}>Password</Text>

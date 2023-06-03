@@ -1,14 +1,14 @@
-//web 810487334175-s7gsrdgelasfvbtg722mpl9dmb7udure.apps.googleusercontent.com
-//ios 810487334175-4q6gs01gfb2nmq8ih0tmqjeh0smqai2m.apps.googleusercontent.com
-//android 810487334175-f2agg9vf5ra33027ckob07r9h084mpe1.apps.googleusercontent.com
-
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, Touchable, View } from "react-native";
+import {
+  StyleSheet,
+  View,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Button } from "./Button";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,11 +17,11 @@ function GoogleLogin() {
   const [userInfo, setUserInfo] = useState(null);
   const [request, response, promptAsyn] = Google.useAuthRequest({
     expoClientId:
-    "810487334175-s7gsrdgelasfvbtg722mpl9dmb7udure.apps.googleusercontent.com",
+      "810487334175-s7gsrdgelasfvbtg722mpl9dmb7udure.apps.googleusercontent.com",
     androidClientId:
       "810487334175-f2agg9vf5ra33027ckob07r9h084mpe1.apps.googleusercontent.com",
-      // iosClientId:
-      //   "810487334175-4q6gs01gfb2nmq8ih0tmqjeh0smqai2m.apps.googleusercontent.com",
+    // iosClientId:
+    //   "810487334175-4q6gs01gfb2nmq8ih0tmqjeh0smqai2m.apps.googleusercontent.com",
   });
 
   useEffect(() => {
@@ -59,7 +59,8 @@ function GoogleLogin() {
   }
 
   return (
-    <View style={{display:"flex",justifyContent:'center',alignItems:'center'}}>
+    <View
+      style={styles.container}>
       {/* <Text>{JSON.stringify(userInfo, null, 2)}</Text> */}
       {/* <Text>Social Login</Text> */}
       <Button
@@ -68,23 +69,28 @@ function GoogleLogin() {
         disabled={!request}
         onPress={()=>promptAsyn()}
       />
-      {/* <View>
-        <Image
-          source={require("../assets/Google__Logo.png")}
-          style={styles.google_logo }
+      <View>
+        <FontAwesome
+          name="google-plus"
+          style={styles.google_logo}
+          size={30}
         />
-      </View> */}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   google_logo: {
-    width: 20,
-    height: 20,
-    marginTop: -27,
-    marginLeft: 25,
-  }
-})
+    color: "white",
+    marginTop: -43,
+    marginLeft: -118,
+  },
+});
 
 export default GoogleLogin;
