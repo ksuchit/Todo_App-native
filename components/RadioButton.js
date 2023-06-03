@@ -12,7 +12,7 @@ export default function RadioButton({status,setStatus}) {
 
   console.log(status)
   return (
-    <View style={{marginTop:20}}>
+    <View style={{marginTop:15}}>
       <RadioForm
         radio_props={options}
         initial={options.findIndex((data)=>data.label===status)} //initial value of this group

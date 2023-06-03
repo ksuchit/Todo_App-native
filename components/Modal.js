@@ -14,6 +14,8 @@ export const Modal = ({
       animationOutTiming={1000}
       backdropTransitionInTiming={800}
       backdropTransitionOutTiming={800}
+      animationIn={"slideInDown"}
+    animationOut={"slideOutUp"}
       {...props}>
       {children}
     </RNModal>

@@ -13,6 +13,7 @@ import { Button, DeleteButton, UpdateButton } from "./Button";
 import StatusModal from "./StatusModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import RNPickerSelect from 'react-native-picker-select';
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -59,9 +60,9 @@ function TodoList() {
   useEffect(() => {
     console.log("parseData", parseData);
     if (parseData.length > 0) {
-      const parseObj = parseData.find((item) => Object.keys(item)[0] === user);
+      const parseObj = parseData?.find((item) => Object.keys(item)[0] === user);
       console.log("final data", parseObj[user]);
-      setTask(parseObj[user]);
+      setTask(parseObj[user] || []);
     }
   }, [parseData]);
 
@@ -111,8 +112,18 @@ function TodoList() {
     setUTitle(data.title);
   };
 
+  console.log(task)
+
   return (
     <ScrollView style={styles.todoContainer}>
+      <RNPickerSelect
+            onValueChange={(value) => console.log(value)}
+            items={[
+                { label: 'Football', value: 'football' },
+                { label: 'Baseball', value: 'baseball' },
+                { label: 'Hockey', value: 'hockey' },
+            ]}
+        />
       {task?.length ? (
         <View style={styles.taskContainer}>
           {task?.map((data, index) =>

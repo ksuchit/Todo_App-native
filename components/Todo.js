@@ -193,41 +193,45 @@ function Todo() {
           >
             <Button onPress={addTodo} title="ADD TASK" />
           </View>
-          <View style={styles.task}>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={styles.inputTitle}>
-                {latestTask.title?.length > 15
-                  ? `${latestTask.title?.slice(0, 15)}...`
-                  : latestTask.title}
-              </Text>
-            </View>
-            <View
-              style={{
-                borderBottomColor: "black",
-                marginTop: 5,
-                borderBottomWidth: StyleSheet.hairlineWidth,
-              }}
-            />
-            <Text style={{ marginTop: 5, marginBottom: 10 }}>
-              {latestTask.details}
-            </Text>
 
-            <Pressable
-              onPress={() => navigation.navigate("Tasks")}
-              style={styles.seeAll}
-            >
-              <Text style={{ fontWeight: 500, color: "#2196F3" }}>
-                See All...
+          {latestTask.title ?
+            <View style={styles.task}>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.inputTitle}>
+                  {latestTask.title?.length > 15
+                    ? `${latestTask.title?.slice(0, 15)}...`
+                    : latestTask.title}
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderBottomColor: "black",
+                  marginTop: 5,
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                }}
+              />
+              <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                {latestTask.details}
               </Text>
-              <Ionicons name="arrow-forward-circle" size={30} color="#2196F3" />
-            </Pressable>
-          </View>
+
+              <Pressable
+                onPress={() => navigation.navigate("Tasks")}
+                style={styles.seeAll}
+              >
+                <Text style={{ fontWeight: 500, color: "#2196F3" }}>
+                  See All...
+                </Text>
+                <Ionicons name="arrow-forward-circle" size={30} color="#2196F3" />
+              </Pressable>
+            </View>
+            : ""
+          }
         </View>
       </ScrollView>
     </>

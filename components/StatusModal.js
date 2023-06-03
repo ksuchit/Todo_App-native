@@ -8,10 +8,11 @@ export default function StatusModal({ show, setShow, status, setStatus }) {
   return (
     <Modal isVisible={show}>
       <Modal.Container>
-        <View style={{display:"flex",alignItems:'flex-end',marginRight:10,marginTop:10}}>
+        <View style={{display:"flex",justifyContent:'space-between',flexDirection:"row",marginRight:15,marginTop:10}}>
+        <View style={{marginLeft:20}}><Text style={{fontSize:20,fontWeight:500}}>Change Status</Text></View>
           <Icon name="close" color="red" onPress={()=> setShow(false)} />
         </View>
-        <Modal.Header title="Set Task-Status" />
+        {/* <Modal.Header /> */}
         <Modal.Body>
           <RadioButton status={status} setStatus={setStatus} />
         </Modal.Body>
