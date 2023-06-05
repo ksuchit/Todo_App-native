@@ -51,7 +51,7 @@ function TodoList() {
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
-        setFilterVal(null)
+        setFilterVal(null);
       };
     }, [])
   );
@@ -65,12 +65,12 @@ function TodoList() {
     // console.log("parseData", parseData);
     if (parseData.length > 0) {
       const parseObj = parseData?.find((item) => Object.keys(item)[0] === user);
-      // console.log("final data", parseObj[user]);
-        if (filterVal)
+      console.log("final data", parseData, user);
+      if (filterVal)
         setTask(
-          parseObj[user]?.filter((data) => data.status === filterVal) || []
+          parseObj ? parseObj[user]?.filter((data) => data.status === filterVal) : []
         );
-      else setTask(parseObj[user] || []);
+      else setTask(parseObj ? parseObj[user] : []);
     }
   }, [parseData, filterVal]);
   //
@@ -100,8 +100,7 @@ function TodoList() {
     } catch (error) {}
   };
   useEffect(() => {
-    if(!filterVal)
-    updateData(task);
+    if (!filterVal) updateData(task);
   }, [update, task, status]);
 
   const onDelete = (index) => {
@@ -126,23 +125,25 @@ function TodoList() {
 
   const onPressTouch = () => {
     scrollRef.current?.scrollTo({
-      x:0,
+      x: 0,
       y: 0,
       animated: true,
     });
   };
 
-  const [isScrolled,setIsScrolled]=useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
   const handleScroll = (e) => {
     // console.log(e.nativeEvent.contentOffset.y)
-    if(e.nativeEvent.contentOffset.y>1)
-      setIsScrolled(true)
-    else
-      setIsScrolled(false)
-  }
+    if (e.nativeEvent.contentOffset.y > 1) setIsScrolled(true);
+    else setIsScrolled(false);
+  };
   return (
-    <View>
-      <ScrollView style={styles.todoContainer} ref={scrollRef} onScroll={handleScroll}>
+    <View style={{backgroundColor:'#f0f0f5',height:"100%"}}>
+      <ScrollView
+        style={styles.todoContainer}
+        ref={scrollRef}
+        onScroll={handleScroll}
+      >
         <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
         {task?.length ? (
           <View style={styles.taskContainer}>
@@ -202,69 +203,73 @@ function TodoList() {
                 </View>
               ) : task?.length > 0 ? (
                 <View style={styles.task} key={index}>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
+                  <Pressable
+                    onPress={() => console.log("index of todo", index)}
                   >
-                    <Text style={styles.inputTitle}>
-                      {data.title?.length > 15
-                        ? `${data.title?.slice(0, 15)}...`
-                        : data.title}
-                    </Text>
-                    <Pressable
-                      onPress={() => {
-                        setShow(true);
-                        setIndex(index);
-                        setStatus(data.status);
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
                       }}
                     >
-                      <View>
-                        {data.status === "InProgress" ? (
-                          <Text style={[styles.inProgress, styles.status]}>
-                            {" "}
-                            {data.status}
-                          </Text>
-                        ) : data.status === "Pending" ? (
-                          <Text style={[styles.pending, styles.status]}>
-                            {" "}
-                            {data.status}
-                          </Text>
-                        ) : data.status === "Complete" ? (
-                          <Text style={[styles.complete, styles.status]}>
-                            {" "}
-                            {data.status}
-                          </Text>
-                        ) : (
-                          <Text style={styles.status}> {data.status}</Text>
-                        )}
-                      </View>
-                    </Pressable>
-                  </View>
-                  <View
-                    style={{
-                      borderBottomColor: "black",
-                      marginTop: 5,
-                      borderBottomWidth: StyleSheet.hairlineWidth,
-                    }}
-                  />
-                  <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                    {data.details}
-                  </Text>
-                  <View
-                    style={{ display: "flex", flexDirection: "row", gap: 5 }}
-                  >
-                    <UpdateButton
-                      title="UPDATE"
-                      onPress={() => onUpdate(index, data)}
+                      <Text style={styles.inputTitle}>
+                        {data.title?.length > 15
+                          ? `${data.title?.slice(0, 15)}...`
+                          : data.title}
+                      </Text>
+                      <Pressable
+                        onPress={() => {
+                          setShow(true);
+                          setIndex(index);
+                          setStatus(data.status);
+                        }}
+                      >
+                        <View>
+                          {data.status === "InProgress" ? (
+                            <Text style={[styles.inProgress, styles.status]}>
+                              {" "}
+                              {data.status}
+                            </Text>
+                          ) : data.status === "Pending" ? (
+                            <Text style={[styles.pending, styles.status]}>
+                              {" "}
+                              {data.status}
+                            </Text>
+                          ) : data.status === "Complete" ? (
+                            <Text style={[styles.complete, styles.status]}>
+                              {" "}
+                              {data.status}
+                            </Text>
+                          ) : (
+                            <Text style={styles.status}> {data.status}</Text>
+                          )}
+                        </View>
+                      </Pressable>
+                    </View>
+                    <View
+                      style={{
+                        borderBottomColor: "black",
+                        marginTop: 5,
+                        borderBottomWidth: StyleSheet.hairlineWidth,
+                      }}
                     />
-                    <DeleteButton
-                      title="DELETE"
-                      onPress={() => onDelete(index)}
-                    />
-                  </View>
+                    <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                      {data.details}
+                    </Text>
+                    <View
+                      style={{ display: "flex", flexDirection: "row", gap: 5 }}
+                    >
+                      <UpdateButton
+                        title="UPDATE"
+                        onPress={() => onUpdate(index, data)}
+                      />
+                      <DeleteButton
+                        title="DELETE"
+                        onPress={() => onDelete(index)}
+                      />
+                    </View>
+                  </Pressable>
                 </View>
               ) : (
                 <View>
@@ -296,13 +301,17 @@ function TodoList() {
 
         {/* scroll to top div */}
       </ScrollView>
-      {isScrolled &&
+      {isScrolled && (
         <View style={{ position: "absolute", right: 4, bottom: 0, zIndex: 1 }}>
           <TouchableOpacity>
-            <Ionicons name="arrow-up-circle-sharp" size={40} onPress={onPressTouch} />
+            <Ionicons
+              name="arrow-up-circle-sharp"
+              size={40}
+              onPress={onPressTouch}
+            />
           </TouchableOpacity>
         </View>
-      }
+      )}
     </View>
   );
 }
