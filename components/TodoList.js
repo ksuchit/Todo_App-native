@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -14,6 +14,8 @@ import StatusModal from "./StatusModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SelectDropdown from "./SelectDropdown";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -25,7 +27,7 @@ function TodoList() {
   const [uDetails, setUDetails] = useState("");
   const [user, setUser] = useState("");
   const [parseData, setParseData] = useState([]);
-  const [filterVal,setFilterVal]=useState("")
+  const [filterVal, setFilterVal] = useState(null);
   const navigation = useNavigation();
 
   const getUser = async () => {
@@ -49,6 +51,7 @@ function TodoList() {
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
+        setFilterVal(null)
       };
     }, [])
   );
@@ -63,13 +66,14 @@ function TodoList() {
     if (parseData.length > 0) {
       const parseObj = parseData?.find((item) => Object.keys(item)[0] === user);
       // console.log("final data", parseObj[user]);
-      if(filterVal)
-        setTask(parseObj[user]?.filter((data) => data.status === filterVal) || []);
-      else
-        setTask(parseObj[user] || []);
+        if (filterVal)
+        setTask(
+          parseObj[user]?.filter((data) => data.status === filterVal) || []
+        );
+      else setTask(parseObj[user] || []);
     }
-  }, [parseData,filterVal]);
-//
+  }, [parseData, filterVal]);
+  //
   useEffect(() => {
     task?.map((data, i) => {
       if (i === index) {
@@ -82,23 +86,24 @@ function TodoList() {
 
   const updateData = async (value) => {
     try {
-        // console.log("value", value);
-        const AllData = await AsyncStorage.getItem("todo");
-        const parseAllData = JSON.parse(AllData);
-        const updatedData = parseAllData.map((data) => {
-          if (Object.keys(data)[0] === user) data[user] = value;
-  
-          return data;
-        });
-        // console.log("updatedData", JSON.stringify(updatedData));
-        // console.log("after");
-        await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
+      // console.log("value", value);
+      const AllData = await AsyncStorage.getItem("todo");
+      const parseAllData = JSON.parse(AllData);
+      const updatedData = parseAllData.map((data) => {
+        if (Object.keys(data)[0] === user) data[user] = value;
+
+        return data;
+      });
+      // console.log("updatedData", JSON.stringify(updatedData));
+      // console.log("after");
+      await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
     } catch (error) {}
   };
   useEffect(() => {
-      updateData(task);
+    if(!filterVal)
+    updateData(task);
   }, [update, task, status]);
-  
+
   const onDelete = (index) => {
     Alert.alert("Alert", "Are You Sure?", [
       { text: "Cancel" },
@@ -115,165 +120,197 @@ function TodoList() {
     setUTitle(data.title);
   };
 
+  console.log("task", task);
+  console.log("filter valu", filterVal);
+  const scrollRef = useRef();
 
-console.log("task",task);
-console.log("filter valu",filterVal)
+  const onPressTouch = () => {
+    scrollRef.current?.scrollTo({
+      x:0,
+      y: 0,
+      animated: true,
+    });
+  };
+
+  const [isScrolled,setIsScrolled]=useState(false)
+  const handleScroll = (e) => {
+    // console.log(e.nativeEvent.contentOffset.y)
+    if(e.nativeEvent.contentOffset.y>1)
+      setIsScrolled(true)
+    else
+      setIsScrolled(false)
+  }
   return (
-    <ScrollView style={styles.todoContainer}>
-      <SelectDropdown setFilterVal={setFilterVal} />
-      {task?.length ? (
-        <View style={styles.taskContainer}>
-          {task?.map((data, index) =>
-            index === update ? (
-              <View style={styles.updateContainer} key={index}>
-                <Text style={styles.inputTitle}>Title</Text>
-                <TextInput
-                  type="text"
-                  placeholder="Enter heading"
-                  style={[styles.inputField]}
-                  defaultValue={data.title}
-                  onChangeText={(newText) => setUTitle(newText)}
-                />
-                <Text style={styles.inputTitle}>Task Details</Text>
-                <TextInput
-                  multiline={true}
-                  numberOfLines={4}
-                  placeholder="Task Details"
-                  style={styles.inputField}
-                  defaultValue={data.details}
-                  onChangeText={(newText) => setUDetails(newText)}
-                />
-                <View
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Button
-                    onPress={() => {
-                      if (uDetails && uTitle) {
-                        setTask((prev) =>
-                          prev.map((upItem, index) => {
-                            if (index === update) {
-                              upItem.title = uTitle;
-                              upItem.details = uDetails;
-                            }
-                            return upItem;
-                          })
-                        );
-
-                        setUpdate("");
-                        setUDetails("");
-                        setUTitle("");
-
-                        Alert.alert("Success", "Successfully Updated");
-                      } else {
-                        Alert.alert("Warning", "Empty fields not Allowed");
-                      }
-                    }}
-                    title="UPDATE"
-                    style={styles.btn}
+    <View>
+      <ScrollView style={styles.todoContainer} ref={scrollRef} onScroll={handleScroll}>
+        <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
+        {task?.length ? (
+          <View style={styles.taskContainer}>
+            {task?.map((data, index) =>
+              index === update ? (
+                <View style={styles.updateContainer} key={index}>
+                  <Text style={styles.inputTitle}>Title</Text>
+                  <TextInput
+                    type="text"
+                    placeholder="Enter heading"
+                    style={[styles.inputField]}
+                    defaultValue={data.title}
+                    onChangeText={(newText) => setUTitle(newText)}
                   />
-                </View>
-              </View>
-            ) : task?.length > 0 ? (
-              <View style={styles.task} key={index}>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={styles.inputTitle}>
-                    {data.title?.length > 15
-                      ? `${data.title?.slice(0, 15)}...`
-                      : data.title}
-                  </Text>
-                  <Pressable
-                    onPress={() => {
-                      setShow(true);
-                      setIndex(index);
-                      setStatus(data.status);
+                  <Text style={styles.inputTitle}>Task Details</Text>
+                  <TextInput
+                    multiline={true}
+                    numberOfLines={4}
+                    placeholder="Task Details"
+                    style={styles.inputField}
+                    defaultValue={data.details}
+                    onChangeText={(newText) => setUDetails(newText)}
+                  />
+                  <View
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    <View>
-                      {data.status === "InProgress" ? (
-                        <Text style={[styles.inProgress, styles.status]}>
-                          {" "}
-                          {data.status}
-                        </Text>
-                      ) : data.status === "Pending" ? (
-                        <Text style={[styles.pending, styles.status]}>
-                          {" "}
-                          {data.status}
-                        </Text>
-                      ) : data.status === "Complete" ? (
-                        <Text style={[styles.complete, styles.status]}>
-                          {" "}
-                          {data.status}
-                        </Text>
-                      ) : (
-                        <Text style={styles.status}> {data.status}</Text>
-                      )}
-                    </View>
-                  </Pressable>
+                    <Button
+                      onPress={() => {
+                        if (uDetails && uTitle) {
+                          setTask((prev) =>
+                            prev.map((upItem, index) => {
+                              if (index === update) {
+                                upItem.title = uTitle;
+                                upItem.details = uDetails;
+                              }
+                              return upItem;
+                            })
+                          );
+
+                          setUpdate("");
+                          setUDetails("");
+                          setUTitle("");
+
+                          Alert.alert("Success", "Successfully Updated");
+                        } else {
+                          Alert.alert("Warning", "Empty fields not Allowed");
+                        }
+                      }}
+                      title="UPDATE"
+                      style={styles.btn}
+                    />
+                  </View>
                 </View>
-                <View
-                  style={{
-                    borderBottomColor: "black",
-                    marginTop: 5,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                  }}
-                />
-                <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                  {data.details}
-                </Text>
-                <View style={{ display: "flex", flexDirection: "row", gap: 5 }}>
-                  <UpdateButton
-                    title="UPDATE"
-                    onPress={() => onUpdate(index, data)}
+              ) : task?.length > 0 ? (
+                <View style={styles.task} key={index}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text style={styles.inputTitle}>
+                      {data.title?.length > 15
+                        ? `${data.title?.slice(0, 15)}...`
+                        : data.title}
+                    </Text>
+                    <Pressable
+                      onPress={() => {
+                        setShow(true);
+                        setIndex(index);
+                        setStatus(data.status);
+                      }}
+                    >
+                      <View>
+                        {data.status === "InProgress" ? (
+                          <Text style={[styles.inProgress, styles.status]}>
+                            {" "}
+                            {data.status}
+                          </Text>
+                        ) : data.status === "Pending" ? (
+                          <Text style={[styles.pending, styles.status]}>
+                            {" "}
+                            {data.status}
+                          </Text>
+                        ) : data.status === "Complete" ? (
+                          <Text style={[styles.complete, styles.status]}>
+                            {" "}
+                            {data.status}
+                          </Text>
+                        ) : (
+                          <Text style={styles.status}> {data.status}</Text>
+                        )}
+                      </View>
+                    </Pressable>
+                  </View>
+                  <View
+                    style={{
+                      borderBottomColor: "black",
+                      marginTop: 5,
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                    }}
                   />
-                  <DeleteButton
-                    title="DELETE"
-                    onPress={() => onDelete(index)}
-                  />
+                  <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                    {data.details}
+                  </Text>
+                  <View
+                    style={{ display: "flex", flexDirection: "row", gap: 5 }}
+                  >
+                    <UpdateButton
+                      title="UPDATE"
+                      onPress={() => onUpdate(index, data)}
+                    />
+                    <DeleteButton
+                      title="DELETE"
+                      onPress={() => onDelete(index)}
+                    />
+                  </View>
                 </View>
-              </View>
-            ) : (
-              <View>
-                <Text>No Task Added</Text>
-              </View>
-            )
-          )}
+              ) : (
+                <View>
+                  <Text>No Task Added</Text>
+                </View>
+              )
+            )}
+          </View>
+        ) : (
+          <View style={styles.noTask}>
+            <Text style={styles.noTaskText}>No Task Added</Text>
+            <Pressable>
+              <MaterialIcons
+                name="add-task"
+                size={30}
+                color="#2196F3"
+                onPress={() => navigation.navigate("Todo")}
+              />
+            </Pressable>
+          </View>
+        )}
+
+        <StatusModal
+          show={show}
+          setShow={setShow}
+          status={status}
+          setStatus={setStatus}
+        />
+
+        {/* scroll to top div */}
+      </ScrollView>
+      {isScrolled &&
+        <View style={{ position: "absolute", right: 4, bottom: 0, zIndex: 1 }}>
+          <TouchableOpacity>
+            <Ionicons name="arrow-up-circle-sharp" size={40} onPress={onPressTouch} />
+          </TouchableOpacity>
         </View>
-      ) : (
-        <View style={styles.noTask}>
-          <Text style={styles.noTaskText}>No Task Added</Text>
-          <Pressable>
-            <MaterialIcons
-              name="add-task"
-              size={30}
-              color="#2196F3"
-              onPress={() => navigation.navigate("Todo")}
-            />
-          </Pressable>
-        </View>
-      )}
-      <StatusModal
-        show={show}
-        setShow={setShow}
-        status={status}
-        setStatus={setStatus}
-      />
-    </ScrollView>
+      }
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   todoContainer: {
     backgroundColor: "#f0f0f5",
+    position: "relative",
   },
   taskContainer: {
     display: "flex",

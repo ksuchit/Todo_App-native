@@ -10,8 +10,8 @@ export const Modal = ({
   return (
     <RNModal
       isVisible={isVisible}
-      animationInTiming={1000}
-      animationOutTiming={1000}
+      animationInTiming={500}
+      animationOutTiming={500}
       backdropTransitionInTiming={800}
       backdropTransitionOutTiming={800}
       animationIn={"slideInDown"}

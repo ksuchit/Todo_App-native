@@ -12,6 +12,7 @@ export default function SelectDropdown(props) {
             { label: 'Pending', value: 'Pending' },
             { label: 'Complete', value: 'Complete' },
         ]}
+              value={props.filterVal}
       />
     </View>
   );
