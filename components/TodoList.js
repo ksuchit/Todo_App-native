@@ -13,7 +13,7 @@ import { Button, DeleteButton, UpdateButton } from "./Button";
 import StatusModal from "./StatusModal";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import RNPickerSelect from 'react-native-picker-select';
+import SelectDropdown from "./SelectDropdown";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -25,6 +25,7 @@ function TodoList() {
   const [uDetails, setUDetails] = useState("");
   const [user, setUser] = useState("");
   const [parseData, setParseData] = useState([]);
+  const [filterVal,setFilterVal]=useState("")
   const navigation = useNavigation();
 
   const getUser = async () => {
@@ -52,20 +53,23 @@ function TodoList() {
     }, [])
   );
 
-  task.map((data) => {
-    if (Object.keys(data)[0] === user) console.log("TODOLIST task", data);
-    return data;
-  });
+  // task.map((data) => {
+  //   if (Object.keys(data)[0] === user) console.log("TODOLIST task", data);
+  //   return data;
+  // });
 
   useEffect(() => {
-    console.log("parseData", parseData);
+    // console.log("parseData", parseData);
     if (parseData.length > 0) {
       const parseObj = parseData?.find((item) => Object.keys(item)[0] === user);
-      console.log("final data", parseObj[user]);
-      setTask(parseObj[user] || []);
+      // console.log("final data", parseObj[user]);
+      if(filterVal)
+        setTask(parseObj[user]?.filter((data) => data.status === filterVal) || []);
+      else
+        setTask(parseObj[user] || []);
     }
-  }, [parseData]);
-
+  }, [parseData,filterVal]);
+//
   useEffect(() => {
     task?.map((data, i) => {
       if (i === index) {
@@ -73,29 +77,28 @@ function TodoList() {
       }
       return data;
     });
-    console.log(status);
+    // console.log(status);
   }, [status]);
 
   const updateData = async (value) => {
     try {
-      console.log("value", value)
-      const AllData = await AsyncStorage.getItem("todo")
-      const parseAllData = JSON.parse(AllData)
-      const updatedData=parseAllData.map((data) => {
-        if (Object.keys(data)[0] === user)
-          data[user] = value
-        
-        return data
-      })
-      console.log("updatedData",JSON.stringify(updatedData))
-      console.log("after")
-      await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
+        // console.log("value", value);
+        const AllData = await AsyncStorage.getItem("todo");
+        const parseAllData = JSON.parse(AllData);
+        const updatedData = parseAllData.map((data) => {
+          if (Object.keys(data)[0] === user) data[user] = value;
+  
+          return data;
+        });
+        // console.log("updatedData", JSON.stringify(updatedData));
+        // console.log("after");
+        await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
     } catch (error) {}
   };
   useEffect(() => {
-    updateData(task);
+      updateData(task);
   }, [update, task, status]);
-
+  
   const onDelete = (index) => {
     Alert.alert("Alert", "Are You Sure?", [
       { text: "Cancel" },
@@ -112,18 +115,12 @@ function TodoList() {
     setUTitle(data.title);
   };
 
-  console.log(task)
 
+console.log("task",task);
+console.log("filter valu",filterVal)
   return (
     <ScrollView style={styles.todoContainer}>
-      <RNPickerSelect
-            onValueChange={(value) => console.log(value)}
-            items={[
-                { label: 'Football', value: 'football' },
-                { label: 'Baseball', value: 'baseball' },
-                { label: 'Hockey', value: 'hockey' },
-            ]}
-        />
+      <SelectDropdown setFilterVal={setFilterVal} />
       {task?.length ? (
         <View style={styles.taskContainer}>
           {task?.map((data, index) =>
