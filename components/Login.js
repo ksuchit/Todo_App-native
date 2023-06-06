@@ -72,7 +72,7 @@ function Login() {
   };
 
   return (
-    <View style={{backgroundColor:'#f0f0f5'}}>
+    <View style={{backgroundColor:'#f0f0f5',height:'100%'}}>
           <Text style={styles.heading}>Login to Your Account</Text>
       <ScrollView style={{marginTop:20}}>
         <View style={styles.container}>
@@ -101,11 +101,11 @@ function Login() {
               onChangeText={(text) => setPassword(text)}
               secureTextEntry={showPassword ? false : true}
             />
-            <Pressable style={styles.eye}>
+            <Pressable style={styles.eye} onPress={()=>setShowPassword(!showPassword)}>
                 {showPassword ?
-                  <MaterialCommunityIcons name="eye-off" size={20}  onPress={()=>setShowPassword(!showPassword)}/>
+                  <MaterialCommunityIcons name="eye-off" size={20}  />
                   :
-                  <MaterialCommunityIcons name="eye" size={20} onPress={()=>setShowPassword(!showPassword)}/>
+                  <MaterialCommunityIcons name="eye" size={20} />
                 }
               </Pressable>
             </View>
@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: 700,
     textAlign: 'center',
-    // marginBottom: 10,
     marginTop:30
     
   },
