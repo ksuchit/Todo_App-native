@@ -1,9 +1,10 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import GoogleLogin from "./GoogleLogin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginButton } from "./Button";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 // import { Button } from "./Button";
 
 function Login() {
@@ -11,6 +12,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [submit, setSubmit] = useState(false);
   const [users, setUsers] = useState([]);
+  const [showPassword,setShowPassword]=useState(false)
   const navigation = useNavigation();
 
   const isAlredyThere = async () => {
@@ -70,51 +72,65 @@ function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Login to Your Account</Text>
-      <View>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.inputBox}
-          placeholder="Enter Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        {submit && !email && (
-          <Text style={styles.errorText}>Email Required</Text>
-        )}
-         {submit && !(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g).test(email) &&
-          <Text style={styles.errorText}>Enter Valid Email</Text>
-        }
-      </View>
-      <View>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.inputBox}
-          placeholder="Enter Password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-        {submit && !password && (
-          <Text style={styles.errorText}>Password Required</Text>
-        )}
-      </View>
-      <View style={{ marginTop: 5 }}>
-        <LoginButton color="#3740FE" onPress={onSubmit} title="LOGIN" />
-      </View>
-      <View style={styles.footerContainer}>
-        <Text style={styles.footerText1}>Don't have account?</Text>
-        <Text
-          style={styles.footerText}
-          onPress={() => {
-            console.log("navigation");
-            navigation.navigate("Signup");
-          }}
-        >
-          Click here to signup
-        </Text>
-      </View>
-      <GoogleLogin />
+    <View style={{backgroundColor:'#f0f0f5'}}>
+          <Text style={styles.heading}>Login to Your Account</Text>
+      <ScrollView style={{marginTop:20}}>
+        <View style={styles.container}>
+          <View>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.inputBox}
+              placeholder="Enter Email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            {submit && !email && (
+              <Text style={styles.errorText}>Email Required</Text>
+            )}
+            {submit && !(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g).test(email) &&
+              <Text style={styles.errorText}>Enter Valid Email</Text>
+            }
+          </View>
+          <View>
+            <Text style={styles.label}>Password</Text>
+            <View style={{display:'flex',flexDirection:'row', justifyContent:"space-between"}}>
+            <TextInput
+              style={styles.inputBox}
+              placeholder="Enter Password"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              secureTextEntry={showPassword ? false : true}
+            />
+            <Pressable style={styles.eye}>
+                {showPassword ?
+                  <MaterialCommunityIcons name="eye-off" size={20}  onPress={()=>setShowPassword(!showPassword)}/>
+                  :
+                  <MaterialCommunityIcons name="eye" size={20} onPress={()=>setShowPassword(!showPassword)}/>
+                }
+              </Pressable>
+            </View>
+            {submit && !password && (
+              <Text style={styles.errorText}>Password Required</Text>
+            )}
+          </View>
+          <View style={{ marginTop: 5 }}>
+            <LoginButton color="#3740FE" onPress={onSubmit} title="LOGIN" />
+          </View>
+          <View style={styles.footerContainer}>
+            <Text style={styles.footerText1}>Don't have account?</Text>
+            <Text
+              style={styles.footerText}
+              onPress={() => {
+                console.log("navigation");
+                navigation.navigate("Signup");
+              }}
+            >
+              Click here to signup
+            </Text>
+          </View>
+          <GoogleLogin />
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -142,18 +158,26 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
-
     elevation: 7,
+    alignSelf: 'stretch',
+    width: '100%',  
   },
   label: {
     fontWeight: "bold",
     fontSize: 15,
   },
+  eye: {
+    right: 35,
+    marginTop: 21
+  },
   heading: {
     fontSize: 32,
     color: "black",
     fontWeight: 700,
-    marginBottom: 10,
+    textAlign: 'center',
+    // marginBottom: 10,
+    marginTop:30
+    
   },
   footerContainer: {
     display: "flex",

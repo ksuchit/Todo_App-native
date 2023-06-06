@@ -22,7 +22,8 @@
         "foregroundImage": "./assets/todo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.suchitk.todoapp"
+      "package": "com.suchitk.todoapp",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "favicon": "./assets/favicon.png"

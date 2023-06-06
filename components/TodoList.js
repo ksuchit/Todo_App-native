@@ -28,6 +28,7 @@ function TodoList() {
   const [user, setUser] = useState("");
   const [parseData, setParseData] = useState([]);
   const [filterVal, setFilterVal] = useState(null);
+  const [touchedTodo,setTouchedTodo]=useState(-1)
   const navigation = useNavigation();
 
   const getUser = async () => {
@@ -52,6 +53,7 @@ function TodoList() {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
         setFilterVal(null);
+        setTouchedTodo(-1)
       };
     }, [])
   );
@@ -105,7 +107,10 @@ function TodoList() {
 
   const onDelete = (index) => {
     Alert.alert("Alert", "Are You Sure?", [
-      { text: "Cancel" },
+      {
+        text: "Cancel",
+        onPress: ()=> setTouchedTodo(index)
+      },
       {
         text: "Delete",
         onPress: () => setTask(task.filter((data, i) => index !== i)),
@@ -204,7 +209,10 @@ function TodoList() {
               ) : task?.length > 0 ? (
                 <View style={styles.task} key={index}>
                   <Pressable
-                    onPress={() => console.log("index of todo", index)}
+                      onPress={() => {
+                        console.log("index of todo", index)
+                        setTouchedTodo(index)
+                      }}
                   >
                     <View
                       style={{
@@ -258,15 +266,20 @@ function TodoList() {
                       {data.details}
                     </Text>
                     <View
-                      style={{ display: "flex", flexDirection: "row", gap: 5 }}
+                      style={{ display: "flex", flexDirection: "row", gap: 5 ,opacity:index===touchedTodo ? 1 : 0.3}}
                     >
                       <UpdateButton
                         title="UPDATE"
-                        onPress={() => onUpdate(index, data)}
+                          onPress={() => {
+                            onUpdate(index, data)
+                            setTouchedTodo(index)
+                          }}
                       />
                       <DeleteButton
                         title="DELETE"
-                        onPress={() => onDelete(index)}
+                          onPress={() => {
+                            onDelete(index)
+                          }}
                       />
                     </View>
                   </Pressable>

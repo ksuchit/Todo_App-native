@@ -1,17 +1,10 @@
-//web 810487334175-s7gsrdgelasfvbtg722mpl9dmb7udure.apps.googleusercontent.com
-//ios 810487334175-4q6gs01gfb2nmq8ih0tmqjeh0smqai2m.apps.googleusercontent.com
-//android 810487334175-f2agg9vf5ra33027ckob07r9h084mpe1.apps.googleusercontent.com
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import Todo from './components/Todo';
+import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import TodoList from './components/TodoList';
-import Login from './components/Login';
-import Signup from './components/Signup';
 import 'react-native-gesture-handler';
 import Tabs from './components/Tabs';
 import BottomTabs from './components/BottomTabs';
+import TopTabs from './components/TopTabs'
 
 const Stack = createNativeStackNavigator()
 
@@ -19,30 +12,13 @@ function MyStack() {
   return (
     <Stack.Navigator
       initialRouteName="Login"
-      screenOptions={{
-        headerTitleAlign: 'center',
-        headerStyle: {
-          marginTop:15,
-          backgroundColor: 'white',
-          backgroundImage:"",
-        },
-        headerTintColor: 'black',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }}>
+      
+    >
       <Stack.Screen 
-        name="Signup" 
-        component={Signup} 
-        options={{ title: 'Signup' }}
-      />       
-      <Stack.Screen 
-        name="Login" 
-        component={Login} 
-        options={
-          {title: 'Login'}
-         
-        }
+        name="Auth"
+        component={TopTabs}
+      
+        options={{ headerShown: false, }}
       />
       <Stack.Screen 
        name="Todo" 
