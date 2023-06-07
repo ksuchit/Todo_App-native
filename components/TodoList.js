@@ -28,7 +28,7 @@ function TodoList() {
   const [user, setUser] = useState("");
   const [parseData, setParseData] = useState([]);
   const [filterVal, setFilterVal] = useState(null);
-  const [touchedTodo,setTouchedTodo]=useState(-1)
+  const [touchedTodo, setTouchedTodo] = useState(-1);
   const navigation = useNavigation();
 
   const getUser = async () => {
@@ -53,7 +53,7 @@ function TodoList() {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
         setFilterVal(null);
-        setTouchedTodo(-1)
+        setTouchedTodo(-1);
       };
     }, [])
   );
@@ -70,7 +70,9 @@ function TodoList() {
       console.log("final data", parseData, user);
       if (filterVal)
         setTask(
-          parseObj ? parseObj[user]?.filter((data) => data.status === filterVal) : []
+          parseObj
+            ? parseObj[user]?.filter((data) => data.status === filterVal)
+            : []
         );
       else setTask(parseObj ? parseObj[user] : []);
     }
@@ -109,7 +111,6 @@ function TodoList() {
     Alert.alert("Alert", "Are You Sure?", [
       {
         text: "Cancel",
-        onPress: ()=> setTouchedTodo(index)
       },
       {
         text: "Delete",
@@ -143,7 +144,7 @@ function TodoList() {
     else setIsScrolled(false);
   };
   return (
-    <View style={{backgroundColor:'#f0f0f5',height:"100%"}}>
+    <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
       <ScrollView
         style={styles.todoContainer}
         ref={scrollRef}
@@ -207,12 +208,12 @@ function TodoList() {
                   </View>
                 </View>
               ) : task?.length > 0 ? (
-                <View style={styles.task} key={index}>
+                <View style={touchedTodo===index ? styles.touchedTask : styles.task} key={index}>
                   <Pressable
-                      onPress={() => {
-                        console.log("index of todo", index)
-                        setTouchedTodo(index)
-                      }}
+                    onPress={() => {
+                      console.log("index of todo", index);
+                      setTouchedTodo(touchedTodo===index ? -1 : index);
+                    }}
                   >
                     <View
                       style={{
@@ -226,6 +227,7 @@ function TodoList() {
                           ? `${data.title?.slice(0, 15)}...`
                           : data.title}
                       </Text>
+                      {/* status section*/}
                       <Pressable
                         onPress={() => {
                           setShow(true);
@@ -265,23 +267,29 @@ function TodoList() {
                     <Text style={{ marginTop: 5, marginBottom: 10 }}>
                       {data.details}
                     </Text>
-                    <View
-                      style={{ display: "flex", flexDirection: "row", gap: 5 ,opacity:index===touchedTodo ? 1 : 0.3}}
-                    >
-                      <UpdateButton
-                        title="UPDATE"
+                    {/* button section */}
+                    {touchedTodo === index && (
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 5,
+                        }}
+                      >
+                        <UpdateButton
+                          title="UPDATE"
                           onPress={() => {
-                            onUpdate(index, data)
-                            setTouchedTodo(index)
+                            onUpdate(index, data);
                           }}
-                      />
-                      <DeleteButton
-                        title="DELETE"
+                        />
+                        <DeleteButton
+                          title="DELETE"
                           onPress={() => {
-                            onDelete(index)
+                            onDelete(index);
                           }}
-                      />
-                    </View>
+                        />
+                      </View>
+                    )}
                   </Pressable>
                 </View>
               ) : (
@@ -349,6 +357,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     backgroundColor: "#dadae3",
+  },
+  touchedTask: {
+    borderColor: "thistle",
+    padding: 20,
+    // marginTop: 5,
+    marginVertical:10,
+    borderRadius: 10,
+    width: "100%",
+    backgroundColor: "#c4c4cc",
+    
+    // shadow
+    shadowColor: "#e91e63",
+    shadowOffset: {
+      width: 5,
+      height:5
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 10,
   },
   updateContainer: {
     borderWidth: 2,

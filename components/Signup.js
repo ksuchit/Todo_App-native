@@ -32,7 +32,7 @@ function Signup() {
     useCallback(() => {
       getRegisteredUsers()
       return () => {
-        
+        setShowPassword(false)
       }
     },[])
   )

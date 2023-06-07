@@ -37,6 +37,7 @@ function Login() {
         setEmail("");
         setPassword("");
         setSubmit(false);
+        setShowPassword(false)
       };
     }, [])
   );
