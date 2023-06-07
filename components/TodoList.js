@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Animated,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 import { Button, DeleteButton, UpdateButton } from "./Button";
 import StatusModal from "./StatusModal";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useScrollToTop } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SelectDropdown from "./SelectDropdown";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -30,6 +31,13 @@ function TodoList() {
   const [filterVal, setFilterVal] = useState(null);
   const [touchedTodo, setTouchedTodo] = useState(-1);
   const navigation = useNavigation();
+
+
+  const bgColourIndex = useRef(new Animated.Value(0)).current;
+  const bgColor = bgColourIndex.interpolate({
+    inputRange: [0, 300],
+    outputRange: ['#c4c4cc', '#6d6d71']
+});
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -93,14 +101,19 @@ function TodoList() {
       // console.log("value", value);
       const AllData = await AsyncStorage.getItem("todo");
       const parseAllData = JSON.parse(AllData);
-      const updatedData = parseAllData.map((data) => {
-        if (Object.keys(data)[0] === user) data[user] = value;
-
-        return data;
-      });
-      // console.log("updatedData", JSON.stringify(updatedData));
-      // console.log("after");
-      await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
+      console.log("parseAllData",parseAllData)
+      console.log("user", user)
+      console.log("value", value)
+      if (user) {
+        const updatedData = parseAllData.map((data) => {
+          if (Object.keys(data)[0] === user) data[user] = value;
+  
+          return data;
+        });
+        // console.log("updatedData", JSON.stringify(updatedData));
+        // console.log("after");
+        await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
+      }
     } catch (error) {}
   };
   useEffect(() => {
@@ -136,6 +149,11 @@ function TodoList() {
       animated: true,
     });
   };
+
+  //default hook to scroll to top when we dbl click on tab btn
+  useScrollToTop(
+    useRef({scrollToTop: ()=> scrollRef.current?.scrollTo({y: 0})})
+  )
 
   const [isScrolled, setIsScrolled] = useState(false);
   const handleScroll = (e) => {
@@ -208,90 +226,92 @@ function TodoList() {
                   </View>
                 </View>
               ) : task?.length > 0 ? (
-                <View style={touchedTodo===index ? styles.touchedTask : styles.task} key={index}>
-                  <Pressable
-                    onPress={() => {
-                      console.log("index of todo", index);
-                      setTouchedTodo(touchedTodo===index ? -1 : index);
-                    }}
-                  >
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Text style={styles.inputTitle}>
-                        {data.title?.length > 15
-                          ? `${data.title?.slice(0, 15)}...`
-                          : data.title}
-                      </Text>
-                      {/* status section*/}
+                  // <Animated.View style={{backgroundColor:bgColor}}>
+                    <Animated.View style={touchedTodo===index ? [styles.touchedTask,{backgroundColor:bgColor}] : styles.task} key={index}>
                       <Pressable
                         onPress={() => {
-                          setShow(true);
-                          setIndex(index);
-                          setStatus(data.status);
-                        }}
-                      >
-                        <View>
-                          {data.status === "InProgress" ? (
-                            <Text style={[styles.inProgress, styles.status]}>
-                              {" "}
-                              {data.status}
-                            </Text>
-                          ) : data.status === "Pending" ? (
-                            <Text style={[styles.pending, styles.status]}>
-                              {" "}
-                              {data.status}
-                            </Text>
-                          ) : data.status === "Complete" ? (
-                            <Text style={[styles.complete, styles.status]}>
-                              {" "}
-                              {data.status}
-                            </Text>
-                          ) : (
-                            <Text style={styles.status}> {data.status}</Text>
-                          )}
-                        </View>
-                      </Pressable>
-                    </View>
-                    <View
-                      style={{
-                        borderBottomColor: "black",
-                        marginTop: 5,
-                        borderBottomWidth: StyleSheet.hairlineWidth,
+                          console.log("index of todo", index);
+                          setTouchedTodo(touchedTodo===index ? -1 : index);
                       }}
-                    />
-                    <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                      {data.details}
-                    </Text>
-                    {/* button section */}
-                    {touchedTodo === index && (
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: 5,
-                        }}
                       >
-                        <UpdateButton
-                          title="UPDATE"
-                          onPress={() => {
-                            onUpdate(index, data);
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text style={styles.inputTitle}>
+                            {data.title?.length > 15
+                              ? `${data.title?.slice(0, 15)}...`
+                              : data.title}
+                          </Text>
+                          {/* status section*/}
+                          <Pressable
+                            onPress={() => {
+                              setShow(true);
+                              setIndex(index);
+                              setStatus(data.status);
+                            }}
+                          >
+                            <View>
+                              {data.status === "InProgress" ? (
+                                <Text style={[styles.inProgress, styles.status]}>
+                                  {" "}
+                                  {data.status}
+                                </Text>
+                              ) : data.status === "Pending" ? (
+                                <Text style={[styles.pending, styles.status]}>
+                                  {" "}
+                                  {data.status}
+                                </Text>
+                              ) : data.status === "Complete" ? (
+                                <Text style={[styles.complete, styles.status]}>
+                                  {" "}
+                                  {data.status}
+                                </Text>
+                              ) : (
+                                <Text style={styles.status}> {data.status}</Text>
+                              )}
+                            </View>
+                          </Pressable>
+                        </View>
+                        <View
+                          style={{
+                            borderBottomColor: "black",
+                            marginTop: 5,
+                            borderBottomWidth: StyleSheet.hairlineWidth,
                           }}
                         />
-                        <DeleteButton
-                          title="DELETE"
-                          onPress={() => {
-                            onDelete(index);
-                          }}
-                        />
-                      </View>
-                    )}
-                  </Pressable>
-                </View>
+                        <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                          {data.details}
+                        </Text>
+                        {/* button section */}
+                        {touchedTodo === index && (
+                          <View
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: 5,
+                            }}
+                          >
+                            <UpdateButton
+                              title="UPDATE"
+                              onPress={() => {
+                                onUpdate(index, data);
+                              }}
+                            />
+                            <DeleteButton
+                              title="DELETE"
+                              onPress={() => {
+                                onDelete(index);
+                              }}
+                            />
+                          </View>
+                        )}
+                      </Pressable>
+                    </Animated.View>
+                  // </Animated.View>
               ) : (
                 <View>
                   <Text>No Task Added</Text>
@@ -365,7 +385,7 @@ const styles = StyleSheet.create({
     marginVertical:10,
     borderRadius: 10,
     width: "100%",
-    backgroundColor: "#c4c4cc",
+    // backgroundColor: "#c4c4cc",
     
     // shadow
     shadowColor: "#e91e63",

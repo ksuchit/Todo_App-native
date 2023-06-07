@@ -12,8 +12,7 @@ function BottomTabs() {
     <Tab.Navigator
       initialRouteName="Todo"
       activeColor="#e91e63"
-      barStyle={{ backgroundColor: '#f0f0f5' }}
-      
+      barStyle={{ backgroundColor: '#f0f0f5' ,borderTopWidth:0.5,borderColor:'grey'}}
     >
       <Tab.Screen
         name="Todo"
