@@ -3,15 +3,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { Button } from "./Button";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import DateTimePicker from "../components/DateTimePicker";
 
 function Todo() {
   const [title, setTitle] = useState("");
@@ -19,6 +21,8 @@ function Todo() {
   const [task, setTask] = useState([]);
   const [user, setUser] = useState();
   const [latestTask, setLatestTask] = useState({ title: "", details: "" });
+  const [show, setShow] = useState(false);
+  const [stared, setStared] = useState(false);
   const navigation = useNavigation();
 
   const getData = async () => {
@@ -46,14 +50,16 @@ function Todo() {
   const getUserFromStorage = async () => {
     const user = await AsyncStorage.getItem("@user");
     const userDetails = JSON.parse(user); //if we did directlys user.email it will give error
-    setUser(userDetails.email);
+    setUser(userDetails.email || "");
   };
 
   useFocusEffect(
     useCallback(() => {
       getUserFromStorage();
       getData();
-      return () => {};
+      return () => {
+        // setShow(false);
+      };
     }, [])
   );
 
@@ -142,6 +148,8 @@ function Todo() {
       //refresh your user inputs
       setTitle("");
       setDetails("");
+      setShow(false);
+      setStared(false)
     } else {
       Alert.alert("Warning", "Title or Details field is Empty");
     }
@@ -154,95 +162,169 @@ function Todo() {
 
   console.log("latestTask", latestTask);
   return (
-    <>
-      <ScrollView
-        style={{
-          backgroundColor: "#f0f0f5",
-          display: "flex",
-          flexDirection: "column",
+    <View>
+      <Pressable
+        onPress={() => {
+          setShow(false);
+          setTitle("");
+          setDetails("");
+          setStared(false)
         }}
       >
-        <View style={styles.container}>
-          <View style={styles.head}>
-            <Text style={styles.heading}>Welcome to Todo</Text>
-          </View>
-          <Text style={styles.inputTitle}>Title</Text>
-          <TextInput
-            type="text"
-            placeholder="Enter heading"
-            style={styles.inputField}
-            value={title}
-            onChangeText={(newText) => setTitle(newText)}
-          />
-          <Text style={styles.inputTitle}>Task Details</Text>
-          <TextInput
-            multiline={true}
-            numberOfLines={4}
-            placeholder="Task Details"
-            style={styles.inputField}
-            value={details}
-            onChangeText={(newText) => setDetails(newText)}
-          />
-          <View
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
-            <Button onPress={addTodo} title="ADD TASK" />
-          </View>
+        <View style={show ? styles.containerShow : styles.containerHide}>
+          {latestTask.title && !show ? (
+              <View style={styles.task}>
+              <Text style={{marginBottom:10,fontSize:20,fontWeight:700,}}>Latest Task...</Text>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={styles.inputTitle}>
+                    {latestTask.title?.length > 15
+                      ? `${latestTask.title?.slice(0, 15)}...`
+                      : latestTask.title}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    borderBottomColor: "black",
+                    marginTop: 5,
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                  }}
+                />
+                <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                  {latestTask.details}
+                </Text>
 
-          {latestTask.title ?
-            <View style={styles.task}>
+                <Pressable
+                  onPress={() => navigation.navigate("Tasks")}
+                  style={styles.seeAll}
+                >
+                  <Text style={{ fontWeight: 500, color: "#2196F3" }}>
+                    See All...
+                  </Text>
+                  <Ionicons
+                    name="arrow-forward-circle"
+                    size={30}
+                    color="#2196F3"
+                  />
+                </Pressable>
+              </View>
+          ) : (
+            ""
+          )}
+
+          {show ? (
+            <View>
+              {/* <View style={styles.head}>
+                <Text style={styles.heading}>Welcome to Todo</Text>
+              </View> */}
+              <Text style={styles.inputTitle}>Title</Text>
+              <TextInput
+                editable
+                type="text"
+                placeholder="Enter heading"
+                style={styles.inputField}
+                value={title}
+                autoFocus={true}
+                onChangeText={(newText) => setTitle(newText)}
+              />
+              <Text style={styles.inputTitle}>Task Details</Text>
+              <TextInput
+                editable
+                multiline={true}
+                numberOfLines={4}
+                placeholder="Task Details"
+                style={styles.inputField}
+                value={details}
+                onChangeText={(newText) => setDetails(newText)}
+              />
               <View
                 style={{
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
                 }}
               >
-                <Text style={styles.inputTitle}>
-                  {latestTask.title?.length > 15
-                    ? `${latestTask.title?.slice(0, 15)}...`
-                    : latestTask.title}
-                </Text>
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 20,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <DateTimePicker />
+                  {stared ? (
+                    <FontAwesome
+                      name="star"
+                      size={25}
+                      onPress={() => setStared(!stared)}
+                      color={"#de9d10"}
+                    />
+                  ) : (
+                    <FontAwesome
+                      name="star-o"
+                      size={25}
+                      onPress={() => setStared(!stared)}
+                    />
+                  )}
+                </View>
+                <TouchableOpacity
+                  style={
+                    title && details
+                      ? styles.addTaskBtn
+                      : styles.addTaskBtnDisabled
+                  }
+                  onPress={addTodo}
+                  disabled={title && details ? false : true}
+                >
+                  <Text>ADD TASK</Text>
+                </TouchableOpacity>
               </View>
-              <View
-                style={{
-                  borderBottomColor: "black",
-                  marginTop: 5,
-                  borderBottomWidth: StyleSheet.hairlineWidth,
-                }}
-              />
-              <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                {latestTask.details}
-              </Text>
-
-              <Pressable
-                onPress={() => navigation.navigate("Tasks")}
-                style={styles.seeAll}
-              >
-                <Text style={{ fontWeight: 500, color: "#2196F3" }}>
-                  See All...
-                </Text>
-                <Ionicons name="arrow-forward-circle" size={30} color="#2196F3" />
-              </Pressable>
             </View>
-            : ""
-          }
+          ) : (
+            <View>
+              <TouchableOpacity
+                style={styles.addTaskBtn}
+                onPress={() => setShow(true)}
+              >
+                <MaterialCommunityIcons name="plus" size={30} />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-      </ScrollView>
-    </>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  containerHide: {
     padding: 25,
     backgroundColor: "#f0f0f5",
     height: "100%",
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  containerShow: {
+    padding: 25,
+    backgroundColor: "#dadae3", //#dadae3 #f0f0f5
+    // height: "100%",
+    // position: 'relative',
+    // bottom:0,
+    display: "flex",
+    justifyContent: "flex-end",
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    top: "50%",
   },
   updateContainer: {
     borderWidth: 2,
@@ -271,7 +353,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "thistle",
+    borderColor: "grey", //thistle
     borderRadius: 10,
   },
   inputTitle: {
@@ -326,6 +408,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     backgroundColor: "#dadae3",
+    position: "absolute",
+    top: 0,
   },
   seeAll: {
     display: "flex",
@@ -333,6 +417,19 @@ const styles = StyleSheet.create({
     gap: 5,
     alignItems: "center",
     justifyContent: "flex-end",
+  },
+  addTaskBtn: {
+    backgroundColor: "#c0c0c0", //#dadae3
+    padding: 10,
+    borderRadius: 10,
+    color: "grey",
+    // width: 50,
+  },
+  addTaskBtnDisabled: {
+    backgroundColor: "grey",
+    padding: 10,
+    borderRadius: 10,
+    opacity: 0.2,
   },
 });
 

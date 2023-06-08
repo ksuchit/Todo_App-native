@@ -42,6 +42,7 @@ function MyStack() {
             }
           </Pressable>
         ),
+        headerBackVisible:false
       }}
     >
       <Stack.Screen

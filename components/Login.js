@@ -80,6 +80,7 @@ function Login() {
           <View>
             <Text style={styles.label}>Email</Text>
             <TextInput
+              editable
               style={styles.inputBox}
               placeholder="Enter Email"
               value={email}
@@ -95,7 +96,8 @@ function Login() {
           <View>
             <Text style={styles.label}>Password</Text>
             <View style={{display:'flex',flexDirection:'row', justifyContent:"space-between"}}>
-            <TextInput
+              <TextInput
+              editable
               style={styles.inputBox}
               placeholder="Enter Password"
               value={password}
