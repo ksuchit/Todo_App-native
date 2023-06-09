@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, StatusBar, StyleSheet, View } from "react-native";
 import { NavigationContainer, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "react-native-gesture-handler";
@@ -25,6 +25,10 @@ function MyStack() {
   return (
     <Stack.Navigator initialRouteName="Login"
       screenOptions={{
+        headerStyle: {
+          backgroundColor: '#f0f0f5',
+        },
+        headerShadowVisible:false,
         headerRight:() => (
           <Pressable onPress={()=>navigation.navigate('Profile')}>
             {userDetails?.picture ?
@@ -65,6 +69,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <NavigationContainer>
+        <StatusBar backgroundColor={'#fofof5'} barStyle='dark-content' />
         <MyStack />
       </NavigationContainer>
     </View>
@@ -74,9 +79,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f0f0f5", //#fff
     // alignItems: 'center',
     justifyContent: "center",
-    margin: 10,
+    paddingTop: 10,
   },
 });

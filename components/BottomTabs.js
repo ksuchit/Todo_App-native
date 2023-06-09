@@ -4,6 +4,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Todo from './Todo';
 import Profile from './Profile';
 import TodoList from './TodoList';
+import HomeTopTabs from './HomeTopTabs';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -16,7 +17,7 @@ function BottomTabs() {
     >
       <Tab.Screen
         name="Todo"
-        component={Todo}
+        component={HomeTopTabs}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (

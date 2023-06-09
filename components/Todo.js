@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
+  KeyboardAvoidingView,
   Pressable,
   StyleSheet,
   Text,
@@ -14,6 +15,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DateTimePicker from "../components/DateTimePicker";
+import HomeTopTabs from "./HomeTopTabs";
 
 function Todo() {
   const [title, setTitle] = useState("");
@@ -58,7 +60,7 @@ function Todo() {
       getUserFromStorage();
       getData();
       return () => {
-        // setShow(false);
+        setShow(false);
       };
     }, [])
   );
@@ -103,6 +105,7 @@ function Todo() {
                   title: title,
                   details: details,
                   status: "No Status",
+                  stared: stared
                 },
               ];
             } else {
@@ -111,6 +114,7 @@ function Todo() {
                   title: title,
                   details: details,
                   status: "No Status",
+                  stared: stared
                 },
               ];
             }
@@ -126,6 +130,7 @@ function Todo() {
                 title: title,
                 details: details,
                 status: "No Status",
+                stared: stared
               },
             ],
           },
@@ -138,6 +143,7 @@ function Todo() {
                 title: title,
                 details: details,
                 status: "No Status",
+                stared: stared
               },
             ],
           },
@@ -149,6 +155,7 @@ function Todo() {
       setTitle("");
       setDetails("");
       setShow(false);
+      setStared(false)
       setStared(false)
     } else {
       Alert.alert("Warning", "Title or Details field is Empty");
@@ -162,7 +169,7 @@ function Todo() {
 
   console.log("latestTask", latestTask);
   return (
-    <View>
+    <View behavior="padding" style={{flex:1}}>
       <Pressable
         onPress={() => {
           setShow(false);
@@ -172,9 +179,9 @@ function Todo() {
         }}
       >
         <View style={show ? styles.containerShow : styles.containerHide}>
-          {latestTask.title && !show ? (
+          {latestTask?.title && !show ? (
               <View style={styles.task}>
-              <Text style={{marginBottom:10,fontSize:20,fontWeight:700,}}>Latest Task...</Text>
+              <Text style={{marginBottom:10,fontSize:20,fontWeight:700,}}>Recent Task...</Text>
                 <View
                   style={{
                     display: "flex",
@@ -318,13 +325,13 @@ const styles = StyleSheet.create({
     padding: 25,
     backgroundColor: "#dadae3", //#dadae3 #f0f0f5
     // height: "100%",
-    // position: 'relative',
+    // position: 'absolute',
     // bottom:0,
     display: "flex",
     justifyContent: "flex-end",
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    top: "50%",
+    top: "37%",
   },
   updateContainer: {
     borderWidth: 2,
