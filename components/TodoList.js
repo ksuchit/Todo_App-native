@@ -12,11 +12,17 @@ import {
 } from "react-native";
 import { Button, DeleteButton, UpdateButton } from "./Button";
 import StatusModal from "./StatusModal";
-import { useFocusEffect, useNavigation, useScrollToTop } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useScrollToTop,
+} from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SelectDropdown from "./SelectDropdown";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Swipeout from "react-native-swipeout";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -32,12 +38,11 @@ function TodoList() {
   const [touchedTodo, setTouchedTodo] = useState(-1);
   const navigation = useNavigation();
 
-
   const bgColourIndex = useRef(new Animated.Value(0)).current;
   const bgColor = bgColourIndex.interpolate({
     inputRange: [0, 300],
-    outputRange: ['#c4c4cc', '#6d6d71']
-});
+    outputRange: ["#c4c4cc", "#6d6d71"],
+  });
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -101,13 +106,13 @@ function TodoList() {
       // console.log("value", value);
       const AllData = await AsyncStorage.getItem("todo");
       const parseAllData = JSON.parse(AllData);
-      console.log("parseAllData",parseAllData)
-      console.log("user", user)
-      console.log("value", value)
+      console.log("parseAllData", parseAllData);
+      console.log("user", user);
+      console.log("value", value);
       if (user) {
         const updatedData = parseAllData.map((data) => {
           if (Object.keys(data)[0] === user) data[user] = value;
-  
+
           return data;
         });
         // console.log("updatedData", JSON.stringify(updatedData));
@@ -121,6 +126,7 @@ function TodoList() {
   }, [update, task, status]);
 
   const onDelete = (index) => {
+    console.log("index", index);
     Alert.alert("Alert", "Are You Sure?", [
       {
         text: "Cancel",
@@ -152,8 +158,8 @@ function TodoList() {
 
   //default hook to scroll to top when we dbl click on tab btn
   useScrollToTop(
-    useRef({scrollToTop: ()=> scrollRef.current?.scrollTo({y: 0})})
-  )
+    useRef({ scrollToTop: () => scrollRef.current?.scrollTo({ y: 0 }) })
+  );
 
   const [isScrolled, setIsScrolled] = useState(false);
   const handleScroll = (e) => {
@@ -161,6 +167,26 @@ function TodoList() {
     if (e.nativeEvent.contentOffset.y > 1) setIsScrolled(true);
     else setIsScrolled(false);
   };
+
+  var swipeoutBtns = [
+    {
+      text: "DELETE",
+      type: "delete",
+      onPress: (index) => {
+        onDelete(index);
+      },
+    }
+  ];
+
+  var leftSwipeBtns = [
+    {
+      text: "UPDATE",
+      backgroundColor: "#2196F3",
+      height: 30,
+      // type:'primary',
+    },
+  ];
+
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
       <ScrollView
@@ -226,93 +252,122 @@ function TodoList() {
                   </View>
                 </View>
               ) : task?.length > 0 ? (
-                  // <Animated.View style={{backgroundColor:bgColor}}>
-                    <Animated.View style={touchedTodo===index ? [styles.touchedTask,{backgroundColor:bgColor}] : styles.task} key={index}>
-                      <Pressable
-                        onPress={() => {
-                          console.log("index of todo", index);
-                          setTouchedTodo(touchedTodo===index ? -1 : index);
+                // <Animated.View
+                //     style={
+                //       touchedTodo === index
+                //         ? [styles.touchedTask, { backgroundColor: bgColor }]
+                //         : styles.task
+                //     }
+                //     key={index}
+                //   >
+                <Swipeout
+                  right={swipeoutBtns}
+                  left={[{ ...leftSwipeBtns[0] }]}
+                  sensitivity={100}
+                  style={
+                    touchedTodo === index
+                      ? [styles.touchedTask, { backgroundColor: bgColor }]
+                      : styles.task
+                  }
+                  key={index}
+                  >
+                    <View style={{
+                      display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end',
+                      // marginTop:-10
+                    }}>
+                      {data.stared ?
+                        <FontAwesome name="star" size={20} color={"#de9d10"} />
+                        :
+                        <FontAwesome name="star-o" size={20} />
+                      }
+                    </View>
+                    <View style={{ paddingHorizontal: 20,paddingBottom:20,paddingTop:5 }}>
+                    <Pressable
+                      onPress={() => {
+                        console.log("index of todo", index);
+                        setTouchedTodo(touchedTodo === index ? -1 : index);
                       }}
+                    >
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
                       >
+                        <Text style={styles.inputTitle}>
+                          {data.title?.length > 15
+                            ? `${data.title?.slice(0, 15)}...`
+                            : data.title}
+                        </Text>
+                        {/* status section*/}
+                        <Pressable
+                          onPress={() => {
+                            setShow(true);
+                            setIndex(index);
+                            setStatus(data.status);
+                          }}
+                        >
+                          <View>
+                            {data.status === "InProgress" ? (
+                              <Text style={[styles.inProgress, styles.status]}>
+                                {" "}
+                                {data.status}
+                              </Text>
+                            ) : data.status === "Pending" ? (
+                              <Text style={[styles.pending, styles.status]}>
+                                {" "}
+                                {data.status}
+                              </Text>
+                            ) : data.status === "Complete" ? (
+                              <Text style={[styles.complete, styles.status]}>
+                                {" "}
+                                {data.status}
+                              </Text>
+                            ) : (
+                              <Text style={styles.status}> {data.status}</Text>
+                            )}
+                          </View>
+                        </Pressable>
+                      </View>
+                      <View
+                        style={{
+                          borderBottomColor: "black",
+                          marginTop: 5,
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+                      <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                        {data.details}
+                      </Text>
+                      {/* button section */}
+                      {touchedTodo === index && (
                         <View
                           style={{
                             display: "flex",
                             flexDirection: "row",
-                            justifyContent: "space-between",
+                            gap: 5,
                           }}
                         >
-                          <Text style={styles.inputTitle}>
-                            {data.title?.length > 15
-                              ? `${data.title?.slice(0, 15)}...`
-                              : data.title}
-                          </Text>
-                          {/* status section*/}
-                          <Pressable
+                          <UpdateButton
+                            title="UPDATE"
                             onPress={() => {
-                              setShow(true);
-                              setIndex(index);
-                              setStatus(data.status);
+                              onUpdate(index, data);
                             }}
-                          >
-                            <View>
-                              {data.status === "InProgress" ? (
-                                <Text style={[styles.inProgress, styles.status]}>
-                                  {" "}
-                                  {data.status}
-                                </Text>
-                              ) : data.status === "Pending" ? (
-                                <Text style={[styles.pending, styles.status]}>
-                                  {" "}
-                                  {data.status}
-                                </Text>
-                              ) : data.status === "Complete" ? (
-                                <Text style={[styles.complete, styles.status]}>
-                                  {" "}
-                                  {data.status}
-                                </Text>
-                              ) : (
-                                <Text style={styles.status}> {data.status}</Text>
-                              )}
-                            </View>
-                          </Pressable>
+                          />
+                          <DeleteButton
+                            title="DELETE"
+                            onPress={() => {
+                              onDelete(index);
+                            }}
+                          />
                         </View>
-                        <View
-                          style={{
-                            borderBottomColor: "black",
-                            marginTop: 5,
-                            borderBottomWidth: StyleSheet.hairlineWidth,
-                          }}
-                        />
-                        <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                          {data.details}
-                        </Text>
-                        {/* button section */}
-                        {touchedTodo === index && (
-                          <View
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              gap: 5,
-                            }}
-                          >
-                            <UpdateButton
-                              title="UPDATE"
-                              onPress={() => {
-                                onUpdate(index, data);
-                              }}
-                            />
-                            <DeleteButton
-                              title="DELETE"
-                              onPress={() => {
-                                onDelete(index);
-                              }}
-                            />
-                          </View>
-                        )}
-                      </Pressable>
-                    </Animated.View>
-                  // </Animated.View>
+                      )}
+                    </Pressable>
+                  </View>
+                </Swipeout>
               ) : (
+                // </Animated.View>
                 <View>
                   <Text>No Task Added</Text>
                 </View>
@@ -372,7 +427,7 @@ const styles = StyleSheet.create({
   task: {
     // borderWidth: 1,
     borderColor: "thistle",
-    padding: 20,
+    // padding: 20,
     marginTop: 5,
     borderRadius: 10,
     width: "100%",
@@ -380,18 +435,18 @@ const styles = StyleSheet.create({
   },
   touchedTask: {
     borderColor: "thistle",
-    padding: 20,
+    // padding: 20,
     // marginTop: 5,
-    marginVertical:10,
+    marginVertical: 10,
     borderRadius: 10,
     width: "100%",
     // backgroundColor: "#c4c4cc",
-    
+
     // shadow
     shadowColor: "#e91e63",
     shadowOffset: {
       width: 5,
-      height:5
+      height: 5,
     },
     shadowOpacity: 0.5,
     shadowRadius: 2,

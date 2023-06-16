@@ -33,6 +33,16 @@
         "projectId": "5a8fffb8-ab37-414b-8a38-d0fde05387f5"
       }
     },
-    "owner": "suchitk"
+    "owner": "suchitk",
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Todo-App needs access to your Camera.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "Todo-App needs access to your Microphone."
+        }
+      ]
+    ]
   }
 }

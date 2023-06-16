@@ -46,13 +46,23 @@ function StaredList() {
     const userData = parseData.find((item) => Object.keys(item)[0] === user)[
       user
     ];
-    console.log("userData", userData);
-    userData.map((item) => {
+
+    const updatedData=userData.map((item) => {
       if (item.title === data.title && item.details === data.details)
         item.stared = false;
 
       return item;
-    });
+    })
+    const finalUpdatedData = parseData.map((item) => {
+      if (Object.keys(item)[0] === user)
+        item[user] = updatedData
+      
+      return item
+    })
+    console.log("finalUpdatedData",finalUpdatedData)
+    await AsyncStorage.setItem("todo", JSON.stringify(finalUpdatedData))
+    //after removing star we need to call updated data so...
+    getData()
   };
 
   console.log("staredList", list);

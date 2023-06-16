@@ -4,6 +4,7 @@ import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import { Button } from "./Button";
 import { Button as ButtonEle } from "@rneui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 function Profile() {
   const [user, setUser] = useState();
@@ -114,6 +115,7 @@ function Profile() {
       </View>
       {user && (
         <View style={styles.profile}>
+          <View>
           {user.picture ? (
             <Image
               source={{
@@ -128,7 +130,9 @@ function Profile() {
               }}
               style={{ height: 170, width: 170, borderRadius: 100 }}
             />
-          )}
+            )}
+            <MaterialCommunityIcons name="account-edit" size={20} />
+          </View>
           <Text style={styles.name}>{user.name}</Text>
           <Text>{user.email}</Text>
           {user.verified_email ? (
