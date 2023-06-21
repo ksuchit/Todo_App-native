@@ -46,19 +46,20 @@ function MyStack() {
             }
           </Pressable>
         ),
-        headerBackVisible:false
+        headerBackVisible: false,
+        // headerShown: false
       }}
     >
       <Stack.Screen
         name="Auth"
         component={TopTabs}
-        options={{ headerShown: false }}
+        options={{ headerShown: false}}
       />
       <Stack.Screen
         name="Todo"
         component={BottomTabs}
         options={{
-          title: "Todo",
+          title: "Todo"
         }}
       />
     </Stack.Navigator>

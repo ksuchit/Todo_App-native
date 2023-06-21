@@ -53,7 +53,7 @@ function TodoList() {
   const getData = async () => {
     const data = await AsyncStorage.getItem("todo");
     const parseData = JSON.parse(data);
-    console.log("parseData", parseData);
+    // console.log("parseData", parseData);
     setParseData(parseData);
   };
 
@@ -80,7 +80,7 @@ function TodoList() {
     // console.log("parseData", parseData);
     if (parseData.length > 0) {
       const parseObj = parseData?.find((item) => Object.keys(item)[0] === user);
-      console.log("final data", parseData, user);
+      // console.log("final data", parseData, user);
       if (filterVal)
         setTask(
           parseObj
@@ -106,9 +106,9 @@ function TodoList() {
       // console.log("value", value);
       const AllData = await AsyncStorage.getItem("todo");
       const parseAllData = JSON.parse(AllData);
-      console.log("parseAllData", parseAllData);
-      console.log("user", user);
-      console.log("value", value);
+      // console.log("parseAllData", parseAllData);
+      // console.log("user", user);
+      // console.log("value", value);
       if (user) {
         const updatedData = parseAllData.map((data) => {
           if (Object.keys(data)[0] === user) data[user] = value;
@@ -126,7 +126,7 @@ function TodoList() {
   }, [update, task, status]);
 
   const onDelete = (index) => {
-    console.log("index", index);
+    // console.log("index", index);
     Alert.alert("Alert", "Are You Sure?", [
       {
         text: "Cancel",
@@ -144,8 +144,8 @@ function TodoList() {
     setUTitle(data.title);
   };
 
-  console.log("task", task);
-  console.log("filter valu", filterVal);
+  // console.log("task", task);
+  // console.log("filter valu", filterVal);
   const scrollRef = useRef();
 
   const onPressTouch = () => {
@@ -187,14 +187,31 @@ function TodoList() {
     },
   ];
 
+  const onStarPressed = async(index) => {
+    console.log("star pressed",index)
+    const data = await AsyncStorage.getItem('todo')
+    const parseData = JSON.parse(data)
+    // console.log("parseData",parseData)
+    const currentData = parseData.find((item) => Object.keys(item)[0] === user)[user]
+    // console.log("currentData", currentData)
+    const updateData = currentData.map((item,i) => {
+      if (i === index)
+        item.stared = !item.stared
+      
+      return item
+    })
+    // console.log("updateData", updateData)
+    setTask(updateData ? updateData : [])
+  }
+
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
+      <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
       <ScrollView
         style={styles.todoContainer}
         ref={scrollRef}
         onScroll={handleScroll}
       >
-        <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
         {task?.length ? (
           <View style={styles.taskContainer}>
             {task?.map((data, index) =>
@@ -260,7 +277,7 @@ function TodoList() {
                 //     }
                 //     key={index}
                 //   >
-                <Swipeout
+                  <Swipeout
                   right={swipeoutBtns}
                   left={[{ ...leftSwipeBtns[0] }]}
                   sensitivity={100}
@@ -269,16 +286,18 @@ function TodoList() {
                       ? [styles.touchedTask, { backgroundColor: bgColor }]
                       : styles.task
                   }
-                  key={index}
+                    key={index}
+                  
                   >
                     <View style={{
                       display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end',
                       // marginTop:-10
-                    }}>
+                    }} 
+                    >
                       {data.stared ?
-                        <FontAwesome name="star" size={20} color={"#de9d10"} />
+                        <FontAwesome name="star" size={20} color={"#de9d10"} onPress={()=>onStarPressed(index)}/>
                         :
-                        <FontAwesome name="star-o" size={20} />
+                        <FontAwesome name="star-o" size={20} onPress={()=>onStarPressed(index)}/>
                       }
                     </View>
                     <View style={{ paddingHorizontal: 20,paddingBottom:20,paddingTop:5 }}>
@@ -364,7 +383,7 @@ function TodoList() {
                         </View>
                       )}
                     </Pressable>
-                  </View>
+                      </View>
                 </Swipeout>
               ) : (
                 // </Animated.View>

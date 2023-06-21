@@ -5,12 +5,17 @@ import { Button } from "./Button";
 import { Button as ButtonEle } from "@rneui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { Camera, useCameraDevices } from "react-native-vision-camera"
 
 function Profile() {
   const [user, setUser] = useState();
   const [completed, setCompleted] = useState(0);
   const [pending, setPending] = useState(0);
   const navigation = useNavigation();
+
+  const devices = useCameraDevices('dual-camera')
+  const device = devices.back
+  const [openCamera,setOpenCamera]=useState(false)
 
   const getUserFromStorage = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -131,7 +136,7 @@ function Profile() {
               style={{ height: 170, width: 170, borderRadius: 100 }}
             />
             )}
-            <MaterialCommunityIcons name="account-edit" size={20} />
+            <MaterialCommunityIcons name="account-edit" size={20} onPress={()=>setOpenCamera(true)} />
           </View>
           <Text style={styles.name}>{user.name}</Text>
           <Text>{user.email}</Text>
@@ -153,6 +158,14 @@ function Profile() {
           <Text style={styles.taskTitle}>Pending Tasks</Text>
         </View>
       </View>
+
+      {openCamera &&
+         <Camera
+         // style={StyleSheet.absoluteFill}
+         device={device}
+         isActive={true}
+       />
+      }
     </View>
   );
 }
