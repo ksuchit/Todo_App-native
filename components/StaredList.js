@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,6 +13,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 function StaredList() {
   const [user, setUser] = useState("");
   const [list, setList] = useState([]);
+  const [loading,setLoading]=useState(false)
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -31,13 +32,20 @@ function StaredList() {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      getUser();
-      getData();
-      return () => {};
-    }, [])
-  );
+useFocusEffect(
+  useCallback(()=>{
+  getUser();
+  getData();
+  setTimeout(()=>{
+    setLoading(true)
+  },1000)
+
+  return()=>{
+    setLoading(false)
+  }
+},[])
+)
+console.log("loadingStared",loading)
 
   const removeFromStared = async (data) => {
     console.log("remove stared", data);
@@ -68,6 +76,7 @@ function StaredList() {
   console.log("staredList", list);
   return (
     <ScrollView>
+      {loading ?
       <View style={styles.container}>
         {list.map((data, i) => (
           <View style={styles.task} key={i}>
@@ -100,6 +109,9 @@ function StaredList() {
           </View>
         ))}
       </View>
+      :
+      <Text>Loading...</Text> 
+      }
     </ScrollView>
   );
 }

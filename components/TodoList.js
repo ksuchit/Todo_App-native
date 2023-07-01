@@ -23,6 +23,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Swipeout from "react-native-swipeout";
+import { Skeleton } from "@rneui/themed";
+import StatusWiseFilter from "./StatusWiseFilter";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -37,6 +39,8 @@ function TodoList() {
   const [filterVal, setFilterVal] = useState(null);
   const [touchedTodo, setTouchedTodo] = useState(-1);
   const navigation = useNavigation();
+const [loading,setLoading]=useState(false)
+const [showStatusWise,setShowStatusWise]=useState(false)
 
   const bgColourIndex = useRef(new Animated.Value(0)).current;
   const bgColor = bgColourIndex.interpolate({
@@ -62,11 +66,16 @@ function TodoList() {
       // Do something when the screen is focused
       getUser();
       getData();
+      setTimeout(()=>{
+        setLoading(true)
+      },1000)
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
         setFilterVal(null);
         setTouchedTodo(-1);
+        setLoading(false)
+        setShowStatusWise(false)
       };
     }, [])
   );
@@ -203,10 +212,28 @@ function TodoList() {
     // console.log("updateData", updateData)
     setTask(updateData ? updateData : [])
   }
-
+const dummyArray=[1,2,3,4,5]
+console.log(dummyArray.length)
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
       <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
+      {loading ?<>
+      {/* total results and toggle filter */}
+      {/* backgroundColor:'#dadae3', */}
+      <View style={styles.resultHead}>
+        <Text>{task.length} results</Text>
+        <Pressable 
+            style={{backgroundColor:'#a3a3b9',padding:2,display:'flex',flexDirection:'row',gap:10,borderRadius:3}}
+            onPress={()=>setShowStatusWise(!showStatusWise)}
+        >
+          <MaterialIcons name="menu-open" size={20} style={{backgroundColor:showStatusWise?"white":"#a3a3b9" ,padding:2,borderRadius:5}} />
+          <FontAwesome name="list-ul" size={20} style={{backgroundColor:showStatusWise ?"#a3a3b9":'white',padding:2,borderRadius:5}} />
+        </Pressable>
+      </View>
+      {/* Status wise filter */}
+      {showStatusWise ?
+      <StatusWiseFilter task={task} />
+      :
       <ScrollView
         style={styles.todoContainer}
         ref={scrollRef}
@@ -416,6 +443,42 @@ function TodoList() {
 
         {/* scroll to top div */}
       </ScrollView>
+      }
+      </>
+      :
+      <>
+        <View style={[styles.resultHead]}>
+          <Skeleton animation="wave" height={20} width={70} />
+          <View style={{backgroundColor:'#a3a3b9',padding:2,display:'flex',flexDirection:'row',gap:10,borderRadius:3}}>
+          <MaterialIcons name="menu-open" size={20} style={{backgroundColor:showStatusWise ?'white':'#a3a3b9',padding:2,borderRadius:5}} />
+          <FontAwesome name="list-ul" size={20} style={{backgroundColor:showStatusWise ?"#a3a3b9":'white',padding:2,borderRadius:5}} />
+        </View>
+        </View>
+      <View style={styles.taskContainer}>
+       {dummyArray.map((data,i)=>
+       <View style={styles.task} key={i}>
+          <View style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+            <Skeleton animation="wave" height={20} width={20} circle  />
+          </View>
+        <View style={{ paddingHorizontal: 20,paddingBottom:20,paddingTop:5}}>
+          <View style={{display:"flex",justifyContent:'space-between',flexDirection:'row'}}>
+            <Skeleton animation="wave" height={20} width={100} />
+            <Skeleton animation="wave" height={20} width={70}  style={{borderRadius:5}}/>
+          </View>
+          <View
+                        style={{
+                          borderBottomColor: "black",
+                          marginTop: 5,marginBottom:5,
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                        }}
+                      />
+         <Skeleton animation="wave" height={20} width={100}/>
+         </View>
+       </View>
+       )}
+      </View>
+      </>
+      }
       {isScrolled && (
         <View style={{ position: "absolute", right: 4, bottom: 0, zIndex: 1 }}>
           <TouchableOpacity>
@@ -490,6 +553,15 @@ const styles = StyleSheet.create({
   inputTitle: {
     fontSize: 15,
     fontWeight: "bold",
+  },
+  resultHead:{
+    backgroundColor:'#dadae3',
+    display:'flex',
+    justifyContent:'space-between',
+    alignItems:'center',
+    flexDirection:'row',
+    paddingHorizontal:25,
+    paddingVertical:5,
   },
   status: {
     fontSize: 10,

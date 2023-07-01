@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { Button } from "./Button";
-import { Button as ButtonEle } from "@rneui/themed";
+import { Button as ButtonEle, Skeleton } from "@rneui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Camera, useCameraDevices } from "react-native-vision-camera"
@@ -42,49 +42,35 @@ function Profile() {
   //   getUserFromStorage();
   // }, []);
 
-  const getData = async () => {
-    const todo = await AsyncStorage.getItem("todo");
-    const parsedTodo = JSON.parse(todo);
-    const currentUser = parsedTodo.find(
-      (data) => Object.keys(data)[0] === user.email
-    );
-    // console.log("userEmail", user.email);
-    // console.log("currentUser", currentUser[user.email]);
 
-    currentUser[user.email].map((data) => {
-      if (data.status === "Complete") setCompleted((cnt) => cnt + 1);
-      else if (data.status === "Pending") setPending((cnt) => cnt + 1);
+  const [loading,setLoading]=useState(false)
+  const {height,width}=useWindowDimensions();
 
-      return data;
-    });
-  };
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
       getUserFromStorage()
-      // getData();
+      setTimeout(()=>{
+        setLoading(true)
+      },1000)
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
         setCompleted(0);
         setPending(0);
+        setLoading(false)
       };
     }, [])
   );
-  console.log("Profile", user);
+  // console.log("Profile", user);
   console.log("TODO data", completed, pending);
+  console.log(loading)
 
   return (
+    loading ?
     <View style={styles.container}>
       <View
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-end",
-          position: "absolute",
-          top: 10,
-          right: 10,
-        }}
+        style={styles.signout}
       >
         {/* <SignoutButton title="SIGNOUT" /> */}
         <ButtonEle
@@ -167,6 +153,23 @@ function Profile() {
        />
       }
     </View>
+    :
+    <View style={styles.container}>
+      <View style={styles.signout}>
+        <Skeleton animation="wave" height={40} width={150} style={{borderRadius:20}} />
+      </View>
+      <View style={[styles.profile,{gap:10}]}>
+      <Skeleton animation="wave" height={170} width={170} style={{borderRadius:100}} />
+      <Skeleton animation="wave" height={50} width={200} />
+      <Skeleton animation="wave" height={20} width={150} />
+      <Skeleton animation="wave" height={50} width={250} style={{borderRadius:40}} />  
+      </View>
+      <Text style={styles.overviewHead}>Tasks Overview</Text>
+      <View style={styles.overview}>
+      <Skeleton height={110} width={160} style={styles.tasks} />
+      <Skeleton height={110} width={160} style={styles.tasks} />
+      </View>
+    </View>
   );
 }
 
@@ -190,6 +193,14 @@ const styles = StyleSheet.create({
     // borderWidth: 2,
     // borderRadius: 20,
     // borderColor: "grey",
+  },
+  signout:{
+    // display: "flex",
+    // justifyContent: "center",
+    // alignItems: "flex-end",
+    position: "absolute",
+    top: 10,
+    right: 10,
   },
   name: {
     marginTop: 5,
