@@ -1,4 +1,4 @@
-import { Image, Pressable, StatusBar, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import { NavigationContainer, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "react-native-gesture-handler";
@@ -70,7 +70,6 @@ export default function App() {
   return (
     <View style={styles.container}>
       <NavigationContainer>
-        <StatusBar backgroundColor={'#fofof5'} barStyle='dark-content' />
         <MyStack />
       </NavigationContainer>
     </View>

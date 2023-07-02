@@ -11,12 +11,12 @@ const Tab = createMaterialBottomTabNavigator();
 function BottomTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Todo"
+      initialRouteName="Home"
       activeColor="#e91e63"
       barStyle={{ backgroundColor: '#f0f0f5', borderTopWidth: 0.5, borderColor: 'grey' }}
     >
       <Tab.Screen
-        name="Todo"
+        name="Home"
         component={HomeTopTabs}
         options={{
           tabBarLabel: 'Home',

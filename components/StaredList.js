@@ -25,7 +25,7 @@ function StaredList() {
     const data = await AsyncStorage.getItem("todo");
     const parseData = JSON.parse(data);
     if (parseData.length > 0) {
-      parseData.map((item) => {
+      await parseData.map((item) => {
         if (Object.keys(item)[0] === user)
           setList(() => item[user].filter((obj) => obj.stared === true));
       });
@@ -40,6 +40,7 @@ useFocusEffect(
     setLoading(true)
   },1000)
 
+  console.log("useFocus in StarList")
   return()=>{
     setLoading(false)
   }

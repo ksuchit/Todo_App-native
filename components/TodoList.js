@@ -213,7 +213,7 @@ const [showStatusWise,setShowStatusWise]=useState(false)
     setTask(updateData ? updateData : [])
   }
 const dummyArray=[1,2,3,4,5]
-console.log(dummyArray.length)
+console.log("TodoList")
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
       <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
