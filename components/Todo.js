@@ -16,6 +16,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DateTimePicker from "../components/DateTimePicker";
 import HomeTopTabs from "./HomeTopTabs";
+import { useToast } from "react-native-toast-notifications";
 
 function Todo() {
   const [title, setTitle] = useState("");
@@ -26,6 +27,7 @@ function Todo() {
   const [show, setShow] = useState(false);
   const [stared, setStared] = useState(false);
   const navigation = useNavigation();
+  const toast = useToast();
 
   const getData = async () => {
     try {
@@ -85,7 +87,6 @@ function Todo() {
     console.log("taskdata", title);
     console.log("taskdata", details);
     if (title && details) {
-      Alert.alert("Success", "New Task Added");
       setLatestTask({ title: title, details: details });
       var userId = "";
       if (task?.length > 0)
@@ -149,7 +150,7 @@ function Todo() {
           },
         ]);
       }
-
+      
       // navigation.navigate('Tab')
       //refresh your user inputs
       setTitle("");
@@ -157,8 +158,17 @@ function Todo() {
       setShow(false);
       setStared(false)
       setStared(false)
+
+      // Alert.alert("Success", "New Task Added");
+      // toast.show("New Task Added")
+      toast.show("New Task Added", {
+        type:'success'
+      });
     } else {
       Alert.alert("Warning", "Title or Details field is Empty");
+      toast.show("Title or Details field is Empty", {
+        type:'warning'
+      })
     }
   };
 

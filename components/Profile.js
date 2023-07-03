@@ -6,6 +6,7 @@ import { Button as ButtonEle, Skeleton } from "@rneui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Camera, useCameraDevices } from "react-native-vision-camera"
+import VisionCamera from "./VisionCamera";
 
 function Profile() {
   const [user, setUser] = useState();
@@ -16,7 +17,7 @@ function Profile() {
   const devices = useCameraDevices('dual-camera')
   const device = devices.back
   const [openCamera,setOpenCamera]=useState(false)
-
+console.log("openCamera",openCamera)
   const getUserFromStorage = async () => {
     const user = await AsyncStorage.getItem("@user");
     setUser(JSON.parse(user));
@@ -146,11 +147,7 @@ function Profile() {
       </View>
 
       {openCamera &&
-         <Camera
-         // style={StyleSheet.absoluteFill}
-         device={device}
-         isActive={true}
-       />
+         <VisionCamera />
       }
     </View>
     :
