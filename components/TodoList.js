@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import {
   Alert,
-  Animated,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -31,6 +30,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Swipeout from "react-native-swipeout";
 import { Skeleton } from "@rneui/themed";
 import StatusWiseFilter from "./StatusWiseFilter";
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -53,7 +53,7 @@ function TodoList() {
   const bgColor = bgColourIndex.interpolate({
     inputRange: [0, 300],
     outputRange: ["#c4c4cc", "#6d6d71"],
-  });
+  });  
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -193,8 +193,25 @@ function TodoList() {
     else setIsScrolled(e.nativeEvent.contentOffset.y);
   };
 
+  const scale = useSharedValue(0)
+  const rotation=useSharedValue(0)
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: scale.value },
+        {rotateZ:`${rotation.value}deg`}
+      ],
+    }
+  }, [])
+
   useEffect(() => {
     prevValue.current = isScrolled;
+    scale.value = withSpring(1)
+    rotation.value = withSequence(
+      withTiming(0, { duration: 100 }),
+      withRepeat(withTiming(360, { duration: 500 }), 1, true),
+      // withTiming(0, { duration: 500 })
+    );
   }, [isScrolled]);
 
   var swipeoutBtns = [
@@ -236,15 +253,6 @@ function TodoList() {
   const dummyArray = [1, 2, 3, 4, 5];
   console.log("TodoList");
   // setTask(updateData ? updateData : []);
-
-  if (!task.length)
-    return (
-      <View>
-        <Skeleton animation="pulse" width={80} height={40} />
-        <Skeleton animation="wave" width={80} height={40} />
-        <Skeleton animation="none" width={80} height={40} />
-      </View>
-    );
 
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
@@ -550,6 +558,7 @@ function TodoList() {
           )}
         </>
       ) : (
+        // Skeleton
         <>
           <View style={[styles.resultHead]}>
             <Skeleton animation="wave" height={20} width={70} />
@@ -599,7 +608,7 @@ function TodoList() {
                   style={{
                     paddingHorizontal: 20,
                     paddingBottom: 20,
-                    paddingTop: 5,
+                    paddingTop: 10,
                   }}
                 >
                   <View
@@ -625,7 +634,7 @@ function TodoList() {
                       borderBottomWidth: StyleSheet.hairlineWidth,
                     }}
                   />
-                  <Skeleton animation="wave" height={20} width={100} />
+                  <Skeleton animation="wave" height={20} width={100} style={{marginBottom:8}} />
                 </View>
               </View>
             ))}
@@ -635,13 +644,16 @@ function TodoList() {
 
       {isScrolled - prevValue.current < 0 && isScrolled > 1 && (
         <View style={{ position: "absolute", right: 4, bottom: 0, zIndex: 1 }}>
-          <TouchableOpacity>
-            <Ionicons
-              name="arrow-up-circle-sharp"
-              size={40}
-              onPress={onPressTouch}
-            />
-          </TouchableOpacity>
+          <Animated.View style={animatedStyle}>
+            <TouchableOpacity>
+              <Ionicons
+                name="arrow-up-circle-sharp"
+                size={40}
+                onPress={onPressTouch}
+                // color={"grey"}
+              />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       )}
     </View>

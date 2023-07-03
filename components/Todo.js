@@ -17,6 +17,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DateTimePicker from "../components/DateTimePicker";
 import HomeTopTabs from "./HomeTopTabs";
 import { useToast } from "react-native-toast-notifications";
+import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 
 function Todo() {
   const [title, setTitle] = useState("");
@@ -57,10 +58,23 @@ function Todo() {
     setUser(userDetails.email || "");
   };
 
+  const rotation = useSharedValue(0)
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform:[{rotateZ:`${rotation.value}deg`}]
+    }
+  })
+
   useFocusEffect(
     useCallback(() => {
       getUserFromStorage();
       getData();
+
+      rotation.value = withSequence(
+        withTiming(-10,{duration:50}),
+        withRepeat(withTiming(10, { duration: 100 }), 4, true),
+        withTiming(0,{duration:50})
+      )
       return () => {
         setShow(false);
       };
@@ -310,12 +324,14 @@ function Todo() {
             </View>
           ) : (
             <View>
-              <TouchableOpacity
-                style={styles.addTaskBtn}
-                onPress={() => setShow(true)}
-              >
-                <MaterialCommunityIcons name="plus" size={30} />
-              </TouchableOpacity>
+              <Animated.View style={animatedStyle}>
+                <TouchableOpacity
+                  style={styles.addTaskBtn}
+                  onPress={() => setShow(true)}
+                >
+                  <MaterialCommunityIcons name="plus" size={30} />
+                </TouchableOpacity>
+              </Animated.View>
             </View>
           )}
         </View>
