@@ -106,7 +106,7 @@ function Todo() {
                   title: title,
                   details: details,
                   status: "No Status",
-                  stared: stared
+                  stared: stared,
                 },
               ];
             } else {
@@ -115,7 +115,7 @@ function Todo() {
                   title: title,
                   details: details,
                   status: "No Status",
-                  stared: stared
+                  stared: stared,
                 },
               ];
             }
@@ -131,7 +131,7 @@ function Todo() {
                 title: title,
                 details: details,
                 status: "No Status",
-                stared: stared
+                stared: stared,
               },
             ],
           },
@@ -144,31 +144,31 @@ function Todo() {
                 title: title,
                 details: details,
                 status: "No Status",
-                stared: stared
+                stared: stared,
               },
             ],
           },
         ]);
       }
-      
+
       // navigation.navigate('Tab')
       //refresh your user inputs
       setTitle("");
       setDetails("");
       setShow(false);
-      setStared(false)
-      setStared(false)
+      setStared(false);
+      setStared(false);
 
       // Alert.alert("Success", "New Task Added");
       // toast.show("New Task Added")
       toast.show("New Task Added", {
-        type:'success'
+        type: "success",
       });
     } else {
-      Alert.alert("Warning", "Title or Details field is Empty");
+      // Alert.alert("Warning", "Title or Details field is Empty");
       toast.show("Title or Details field is Empty", {
-        type:'warning'
-      })
+        type: "warning",
+      });
     }
   };
 
@@ -179,57 +179,59 @@ function Todo() {
 
   console.log("latestTask", latestTask);
   return (
-    <View behavior="padding" style={{flex:1}}>
+    <View behavior="padding" style={{ flex: 1 }}>
       <Pressable
         onPress={() => {
           setShow(false);
           setTitle("");
           setDetails("");
-          setStared(false)
+          setStared(false);
         }}
       >
         <View style={show ? styles.containerShow : styles.containerHide}>
           {latestTask?.title && !show ? (
-              <View style={styles.task}>
-              <Text style={{marginBottom:10,fontSize:20,fontWeight:700,}}>Recent Task...</Text>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={styles.inputTitle}>
-                    {latestTask.title?.length > 15
-                      ? `${latestTask.title?.slice(0, 15)}...`
-                      : latestTask.title}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    borderBottomColor: "black",
-                    marginTop: 5,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                  }}
-                />
-                <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                  {latestTask.details}
+            <View style={styles.task}>
+              <Text style={{ marginBottom: 10, fontSize: 20, fontWeight: 700 }}>
+                Recent Task...
+              </Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.inputTitle}>
+                  {latestTask.title?.length > 15
+                    ? `${latestTask.title?.slice(0, 15)}...`
+                    : latestTask.title}
                 </Text>
-
-                <Pressable
-                  onPress={() => navigation.navigate("Tasks")}
-                  style={styles.seeAll}
-                >
-                  <Text style={{ fontWeight: 500, color: "#2196F3" }}>
-                    See All...
-                  </Text>
-                  <Ionicons
-                    name="arrow-forward-circle"
-                    size={30}
-                    color="#2196F3"
-                  />
-                </Pressable>
               </View>
+              <View
+                style={{
+                  borderBottomColor: "black",
+                  marginTop: 5,
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                }}
+              />
+              <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                {latestTask.details}
+              </Text>
+
+              <Pressable
+                onPress={() => navigation.navigate("Tasks")}
+                style={styles.seeAll}
+              >
+                <Text style={{ fontWeight: 500, color: "#2196F3" }}>
+                  See All...
+                </Text>
+                <Ionicons
+                  name="arrow-forward-circle"
+                  size={30}
+                  color="#2196F3"
+                />
+              </Pressable>
+            </View>
           ) : (
             ""
           )}

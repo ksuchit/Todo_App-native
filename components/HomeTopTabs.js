@@ -11,7 +11,7 @@ function HomeTopTabs() {
       tabBarLabelStyle: { fontSize: 14,fontWeight:600 },
       tabBarItemStyle: { width: 150 },
       tabBarStyle: { backgroundColor: '#f0f0f5' }, //powderblue
-      // tabBarIndicator:"grey"
+      tabBarIndicatorStyle:{backgroundColor:'grey'}
     }}
     >
       <Tab.Screen name="Stared" component={StaredList}

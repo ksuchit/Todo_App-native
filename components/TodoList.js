@@ -1,5 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Alert,
   Animated,
@@ -39,8 +45,8 @@ function TodoList() {
   const [filterVal, setFilterVal] = useState(null);
   const [touchedTodo, setTouchedTodo] = useState(-1);
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false)
-  const [showStatusWise, setShowStatusWise] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [showStatusWise, setShowStatusWise] = useState(false);
   const prevValue = useRef();
 
   const bgColourIndex = useRef(new Animated.Value(0)).current;
@@ -50,7 +56,6 @@ function TodoList() {
   });
 
   const getUser = async () => {
-
     const user = await AsyncStorage.getItem("@user");
     const userDetails = JSON.parse(user);
     setUser(userDetails.email);
@@ -65,21 +70,20 @@ function TodoList() {
 
   useFocusEffect(
     useCallback(() => {
-
       // Do something when the screen is focused
       getUser();
       getData();
       setTimeout(() => {
-        setLoading(true)
-      }, 1000)
+        setLoading(true);
+      }, 1000);
       // Promise.all[getUser(),getData()]
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
         setFilterVal(null);
         setTouchedTodo(-1);
-        setLoading(false)
-        setShowStatusWise(false)
+        setLoading(false);
+        setShowStatusWise(false);
       };
     }, [])
   );
@@ -137,7 +141,9 @@ function TodoList() {
         // console.log("after");
         await AsyncStorage.setItem("todo", JSON.stringify(updatedData));
       }
-    } catch (error) { console.log(error) }
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     if (!filterVal) updateData(task);
@@ -225,10 +231,10 @@ function TodoList() {
       return item;
     });
     // console.log("updateData", updateData)
-    setTask(updateData ? updateData : [])
-  }
-  const dummyArray = [1, 2, 3, 4, 5]
-  console.log("TodoList")
+    setTask(updateData ? updateData : []);
+  };
+  const dummyArray = [1, 2, 3, 4, 5];
+  console.log("TodoList");
   // setTask(updateData ? updateData : []);
 
   if (!task.length)
@@ -243,303 +249,390 @@ function TodoList() {
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
       <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
-      {loading ? <>
-        {/* total results and toggle filter */}
-        {/* backgroundColor:'#dadae3', */}
-        <View style={styles.resultHead}>
-          <Text>{task.length} results</Text>
-          <Pressable
-            style={{ backgroundColor: '#a3a3b9', padding: 2, display: 'flex', flexDirection: 'row', gap: 10, borderRadius: 3 }}
-            onPress={() => setShowStatusWise(!showStatusWise)}
-          >
-            <MaterialIcons name="menu-open" size={20} style={{ backgroundColor: showStatusWise ? "white" : "#a3a3b9", padding: 2, borderRadius: 5 }} />
-            <FontAwesome name="list-ul" size={20} style={{ backgroundColor: showStatusWise ? "#a3a3b9" : 'white', padding: 2, borderRadius: 5 }} />
-          </Pressable>
-        </View>
-        {/* Status wise filter */}
-        {showStatusWise ?
-          <StatusWiseFilter task={task} />
-          :
-          <ScrollView
-            style={styles.todoContainer}
-            ref={scrollRef}
-            onScroll={handleScroll}
-          >
-            {task?.length ? (
-              <View style={styles.taskContainer}>
-                {task?.map((data, index) =>
-                  index === update ? (
-                    <View style={styles.updateContainer} key={index}>
-                      <Text style={styles.inputTitle}>Title</Text>
-                      <TextInput
-                        type="text"
-                        placeholder="Enter heading"
-                        style={[styles.inputField]}
-                        defaultValue={data.title}
-                        onChangeText={(newText) => setUTitle(newText)}
-                      />
-                      <Text style={styles.inputTitle}>Task Details</Text>
-                      <TextInput
-                        multiline={true}
-                        numberOfLines={4}
-                        placeholder="Task Details"
-                        style={styles.inputField}
-                        defaultValue={data.details}
-                        onChangeText={(newText) => setUDetails(newText)}
-                      />
-                      <View
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Button
-                          onPress={() => {
-                            if (uDetails && uTitle) {
-                              setTask((prev) =>
-                                prev.map((upItem, index) => {
-                                  if (index === update) {
-                                    upItem.title = uTitle;
-                                    upItem.details = uDetails;
-                                  }
-                                  return upItem;
-                                })
-                              );
-
-                              setUpdate("");
-                              setUDetails("");
-                              setUTitle("");
-
-                              Alert.alert("Success", "Successfully Updated");
-                            } else {
-                              Alert.alert("Warning", "Empty fields not Allowed");
-                            }
-                          }}
-                          title="UPDATE"
-                          style={styles.btn}
+      {loading ? (
+        <>
+          {/* total results and toggle filter */}
+          {/* backgroundColor:'#dadae3', */}
+          <View style={styles.resultHead}>
+            <Text>{task.length} results</Text>
+            <Pressable
+              style={{
+                backgroundColor: "#a3a3b9",
+                padding: 2,
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                borderRadius: 3,
+              }}
+              onPress={() => setShowStatusWise(!showStatusWise)}
+            >
+              <MaterialIcons
+                name="menu-open"
+                size={20}
+                style={{
+                  backgroundColor: showStatusWise ? "white" : "#a3a3b9",
+                  padding: 2,
+                  borderRadius: 5,
+                }}
+              />
+              <FontAwesome
+                name="list-ul"
+                size={20}
+                style={{
+                  backgroundColor: showStatusWise ? "#a3a3b9" : "white",
+                  padding: 2,
+                  borderRadius: 5,
+                }}
+              />
+            </Pressable>
+          </View>
+          {/* Status wise filter */}
+          {showStatusWise ? (
+            <StatusWiseFilter task={task} />
+          ) : (
+            <ScrollView
+              style={styles.todoContainer}
+              ref={scrollRef}
+              onScroll={handleScroll}
+            >
+              {task?.length ? (
+                <View style={styles.taskContainer}>
+                  {task?.map((data, index) =>
+                    index === update ? (
+                      <View style={styles.updateContainer} key={index}>
+                        <Text style={styles.inputTitle}>Title</Text>
+                        <TextInput
+                          type="text"
+                          placeholder="Enter heading"
+                          style={[styles.inputField]}
+                          defaultValue={data.title}
+                          onChangeText={(newText) => setUTitle(newText)}
                         />
-                      </View>
-                    </View>
-                  ) : task?.length > 0 ? (
-                    // <Animated.View
-                    //     style={
-                    //       touchedTodo === index
-                    //         ? [styles.touchedTask, { backgroundColor: bgColor }]
-                    //         : styles.task
-                    //     }
-                    //     key={index}
-                    //   >
-
-                    <Swipeout
-                      right={swipeoutBtns}
-                      left={[{ ...leftSwipeBtns[0] }]}
-                      sensitivity={100}
-                      style={
-                        touchedTodo === index
-                          ? [styles.touchedTask, { backgroundColor: bgColor }]
-                          : styles.task
-                      }
-                      key={index}
-                    >
-                      <View
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          alignItems: "flex-end",
-                          // marginTop:-10
-                        }}
-                      >
-                        {data.stared ? (
-                          <View
-                            style={{
-                              backgroundColor: "#f0f0f5",
-                              borderRadius: 10,
-                              padding: 2,
-                            }}
-                          >
-                            <FontAwesome
-                              name="star"
-                              size={20}
-                              color={"#de9d10"}
-                              onPress={() => onStarPressed(index)}
-                            />
-                          </View>
-                        ) : (
-                          <View
-                            style={{
-                              backgroundColor: "#f0f0f5",
-                              borderRadius: 10,
-                              padding: 2,
-                            }}
-                          >
-                            <FontAwesome
-                              name="star-o"
-                              size={20}
-                              onPress={() => onStarPressed(index)}
-                            />
-                          </View>
-                        )}
-                      </View>
-                      <View
-                        style={{
-                          paddingHorizontal: 20,
-                          paddingBottom: 20,
-                          paddingTop: 5,
-                        }}
-                      >
-                        <Pressable
-                          onPress={() => {
-                            console.log("index of todo", index);
-                            setTouchedTodo(touchedTodo === index ? -1 : index);
+                        <Text style={styles.inputTitle}>Task Details</Text>
+                        <TextInput
+                          multiline={true}
+                          numberOfLines={4}
+                          placeholder="Task Details"
+                          style={styles.inputField}
+                          defaultValue={data.details}
+                          onChangeText={(newText) => setUDetails(newText)}
+                        />
+                        <View
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          <View
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "space-between",
+                          <Button
+                            onPress={() => {
+                              if (uDetails && uTitle) {
+                                setTask((prev) =>
+                                  prev.map((upItem, index) => {
+                                    if (index === update) {
+                                      upItem.title = uTitle;
+                                      upItem.details = uDetails;
+                                    }
+                                    return upItem;
+                                  })
+                                );
+
+                                setUpdate("");
+                                setUDetails("");
+                                setUTitle("");
+
+                                Alert.alert("Success", "Successfully Updated");
+                              } else {
+                                Alert.alert(
+                                  "Warning",
+                                  "Empty fields not Allowed"
+                                );
+                              }
                             }}
-                          >
-                            <Text style={styles.inputTitle}>
-                              {data.title?.length > 15
-                                ? `${data.title?.slice(0, 15)}...`
-                                : data.title}
-                            </Text>
-                            {/* status section*/}
-                            <Pressable
-                              onPress={() => {
-                                setShow(true);
-                                setIndex(index);
-                                setStatus(data.status);
+                            title="UPDATE"
+                            style={styles.btn}
+                          />
+                        </View>
+                      </View>
+                    ) : task?.length > 0 ? (
+                      // <Animated.View
+                      //     style={
+                      //       touchedTodo === index
+                      //         ? [styles.touchedTask, { backgroundColor: bgColor }]
+                      //         : styles.task
+                      //     }
+                      //     key={index}
+                      //   >
+
+                      <Swipeout
+                        right={swipeoutBtns}
+                        left={[{ ...leftSwipeBtns[0] }]}
+                        sensitivity={100}
+                        style={
+                          touchedTodo === index
+                            ? [styles.touchedTask, { backgroundColor: bgColor }]
+                            : styles.task
+                        }
+                        key={index}
+                      >
+                        <View
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            alignItems: "flex-end",
+                            // marginTop:-10
+                          }}
+                        >
+                          {data.stared ? (
+                            <View
+                              style={{
+                                backgroundColor: "#f0f0f5",
+                                borderRadius: 10,
+                                padding: 2,
                               }}
                             >
-                              <View>
-                                {data.status === "InProgress" ? (
-                                  <Text style={[styles.inProgress, styles.status]}>
-                                    {" "}
-                                    {data.status}
-                                  </Text>
-                                ) : data.status === "Pending" ? (
-                                  <Text style={[styles.pending, styles.status]}>
-                                    {" "}
-                                    {data.status}
-                                  </Text>
-                                ) : data.status === "Complete" ? (
-                                  <Text style={[styles.complete, styles.status]}>
-                                    {" "}
-                                    {data.status}
-                                  </Text>
-                                ) : (
-                                  <Text style={styles.status}> {data.status}</Text>
-                                )}
-                              </View>
-                            </Pressable>
-                          </View>
-                          <View
-                            style={{
-                              borderBottomColor: "black",
-                              marginTop: 5,
-                              borderBottomWidth: StyleSheet.hairlineWidth,
+                              <FontAwesome
+                                name="star"
+                                size={20}
+                                color={"#de9d10"}
+                                onPress={() => onStarPressed(index)}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={{
+                                backgroundColor: "#f0f0f5",
+                                borderRadius: 10,
+                                padding: 2,
+                              }}
+                            >
+                              <FontAwesome
+                                name="star-o"
+                                size={20}
+                                onPress={() => onStarPressed(index)}
+                              />
+                            </View>
+                          )}
+                        </View>
+                        <View
+                          style={{
+                            paddingHorizontal: 20,
+                            paddingBottom: 20,
+                            paddingTop: 5,
+                          }}
+                        >
+                          <Pressable
+                            onPress={() => {
+                              console.log("index of todo", index);
+                              setTouchedTodo(
+                                touchedTodo === index ? -1 : index
+                              );
                             }}
-                          />
-                          <Text style={{ marginTop: 5, marginBottom: 10 }}>
-                            {data.details}
-                          </Text>
-                          {/* button section */}
-                          {touchedTodo === index && (
+                          >
                             <View
                               style={{
                                 display: "flex",
                                 flexDirection: "row",
-                                gap: 5,
+                                justifyContent: "space-between",
                               }}
                             >
-                              <UpdateButton
-                                title="UPDATE"
+                              <Text style={styles.inputTitle}>
+                                {data.title?.length > 15
+                                  ? `${data.title?.slice(0, 15)}...`
+                                  : data.title}
+                              </Text>
+                              {/* status section*/}
+                              <Pressable
                                 onPress={() => {
-                                  onUpdate(index, data);
+                                  setShow(true);
+                                  setIndex(index);
+                                  setStatus(data.status);
                                 }}
-                              />
-                              <DeleteButton
-                                title="DELETE"
-                                onPress={() => {
-                                  onDelete(index);
-                                }}
-                              />
+                              >
+                                <View>
+                                  {data.status === "InProgress" ? (
+                                    <Text
+                                      style={[styles.inProgress, styles.status]}
+                                    >
+                                      {" "}
+                                      {data.status}
+                                    </Text>
+                                  ) : data.status === "Pending" ? (
+                                    <Text
+                                      style={[styles.pending, styles.status]}
+                                    >
+                                      {" "}
+                                      {data.status}
+                                    </Text>
+                                  ) : data.status === "Complete" ? (
+                                    <Text
+                                      style={[styles.complete, styles.status]}
+                                    >
+                                      {" "}
+                                      {data.status}
+                                    </Text>
+                                  ) : (
+                                    <Text style={styles.status}>
+                                      {" "}
+                                      {data.status}
+                                    </Text>
+                                  )}
+                                </View>
+                              </Pressable>
                             </View>
-                          )}
-                        </Pressable>
+                            <View
+                              style={{
+                                borderBottomColor: "black",
+                                marginTop: 5,
+                                borderBottomWidth: StyleSheet.hairlineWidth,
+                              }}
+                            />
+                            <Text style={{ marginTop: 5, marginBottom: 10 }}>
+                              {data.details}
+                            </Text>
+                            {/* button section */}
+                            {touchedTodo === index && (
+                              <View
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  gap: 5,
+                                }}
+                              >
+                                <UpdateButton
+                                  title="UPDATE"
+                                  onPress={() => {
+                                    onUpdate(index, data);
+                                  }}
+                                />
+                                <DeleteButton
+                                  title="DELETE"
+                                  onPress={() => {
+                                    onDelete(index);
+                                  }}
+                                />
+                              </View>
+                            )}
+                          </Pressable>
+                        </View>
+                      </Swipeout>
+                    ) : (
+                      // </Animated.View>
+                      <View>
+                        <Text>No Task Added</Text>
                       </View>
-                    </Swipeout>
-                  ) : (
-                    // </Animated.View>
-                    <View>
-                      <Text>No Task Added</Text>
-                    </View>
-                  )
-                )}
-              </View>
-            ) : (
-              <View style={styles.noTask}>
-                <Text style={styles.noTaskText}>No Task Added</Text>
-                <Pressable>
-                  <MaterialIcons
-                    name="add-task"
-                    size={30}
-                    color="#2196F3"
-                    onPress={() => navigation.navigate("Todo")}
-                  />
-                </Pressable>
-              </View>
-            )}
+                    )
+                  )}
+                </View>
+              ) : (
+                <View style={styles.noTask}>
+                  <Text style={styles.noTaskText}>No Task Added</Text>
+                  <Pressable>
+                    <MaterialIcons
+                      name="add-task"
+                      size={30}
+                      color="#2196F3"
+                      onPress={() => navigation.navigate("Todo")}
+                    />
+                  </Pressable>
+                </View>
+              )}
 
-            <StatusModal
-              show={show}
-              setShow={setShow}
-              status={status}
-              setStatus={setStatus}
-            />
+              <StatusModal
+                show={show}
+                setShow={setShow}
+                status={status}
+                setStatus={setStatus}
+              />
 
-            {/* scroll to top div */}
-          </ScrollView>
-        }
-      </>
-        :
+              {/* scroll to top div */}
+            </ScrollView>
+          )}
+        </>
+      ) : (
         <>
           <View style={[styles.resultHead]}>
             <Skeleton animation="wave" height={20} width={70} />
-            <View style={{ backgroundColor: '#a3a3b9', padding: 2, display: 'flex', flexDirection: 'row', gap: 10, borderRadius: 3 }}>
-              <MaterialIcons name="menu-open" size={20} style={{ backgroundColor: showStatusWise ? 'white' : '#a3a3b9', padding: 2, borderRadius: 5 }} />
-              <FontAwesome name="list-ul" size={20} style={{ backgroundColor: showStatusWise ? "#a3a3b9" : 'white', padding: 2, borderRadius: 5 }} />
+            <View
+              style={{
+                backgroundColor: "#a3a3b9",
+                padding: 2,
+                display: "flex",
+                flexDirection: "row",
+                gap: 10,
+                borderRadius: 3,
+              }}
+            >
+              <MaterialIcons
+                name="menu-open"
+                size={20}
+                style={{
+                  backgroundColor: showStatusWise ? "white" : "#a3a3b9",
+                  padding: 2,
+                  borderRadius: 5,
+                }}
+              />
+              <FontAwesome
+                name="list-ul"
+                size={20}
+                style={{
+                  backgroundColor: showStatusWise ? "#a3a3b9" : "white",
+                  padding: 2,
+                  borderRadius: 5,
+                }}
+              />
             </View>
           </View>
           <View style={styles.taskContainer}>
-            {dummyArray.map((data, i) =>
+            {dummyArray.map((data, i) => (
               <View style={styles.task} key={i}>
-                <View style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                <View
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "flex-end",
+                  }}
+                >
                   <Skeleton animation="wave" height={20} width={20} circle />
                 </View>
-                <View style={{ paddingHorizontal: 20, paddingBottom: 20, paddingTop: 5 }}>
-                  <View style={{ display: "flex", justifyContent: 'space-between', flexDirection: 'row' }}>
+                <View
+                  style={{
+                    paddingHorizontal: 20,
+                    paddingBottom: 20,
+                    paddingTop: 5,
+                  }}
+                >
+                  <View
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                    }}
+                  >
                     <Skeleton animation="wave" height={20} width={100} />
-                    <Skeleton animation="wave" height={20} width={70} style={{ borderRadius: 5 }} />
+                    <Skeleton
+                      animation="wave"
+                      height={20}
+                      width={70}
+                      style={{ borderRadius: 5 }}
+                    />
                   </View>
                   <View
                     style={{
                       borderBottomColor: "black",
-                      marginTop: 5, marginBottom: 5,
+                      marginTop: 5,
+                      marginBottom: 5,
                       borderBottomWidth: StyleSheet.hairlineWidth,
                     }}
                   />
                   <Skeleton animation="wave" height={20} width={100} />
                 </View>
               </View>
-            )}
+            ))}
           </View>
         </>
-      }
-      
+      )}
+
       {isScrolled - prevValue.current < 0 && isScrolled > 1 && (
         <View style={{ position: "absolute", right: 4, bottom: 0, zIndex: 1 }}>
           <TouchableOpacity>
@@ -552,10 +645,8 @@ function TodoList() {
         </View>
       )}
     </View>
-  )
+  );
 }
-
-
 
 const styles = StyleSheet.create({
   todoContainer: {
@@ -617,14 +708,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
   },
-  resultHead:{
-    backgroundColor:'#dadae3',
-    display:'flex',
-    justifyContent:'space-between',
-    alignItems:'center',
-    flexDirection:'row',
-    paddingHorizontal:25,
-    paddingVertical:5,
+  resultHead: {
+    backgroundColor: "#dadae3",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 25,
+    paddingVertical: 5,
   },
   status: {
     fontSize: 10,

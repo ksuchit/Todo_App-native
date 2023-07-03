@@ -88,9 +88,6 @@ function MyStack() {
 export default function App() {
   return (
     <View style={styles.container}>
-      <NavigationContainer>
-        <MyStack />
-      </NavigationContainer>
       <ToastProvider
         placement="top"
         duration={2000}
