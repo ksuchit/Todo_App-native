@@ -1,14 +1,9 @@
-<<<<<<< Updated upstream
-import { Image, Pressable, StyleSheet, View } from "react-native";
-import { NavigationContainer, useFocusEffect, useNavigation } from "@react-navigation/native";
-=======
 import { Image, Pressable, StatusBar, StyleSheet, View } from "react-native";
 import {
   NavigationContainer,
   useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
->>>>>>> Stashed changes
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "react-native-gesture-handler";
 import BottomTabs from "./components/BottomTabs";
@@ -93,11 +88,9 @@ function MyStack() {
 export default function App() {
   return (
     <View style={styles.container}>
-<<<<<<< Updated upstream
       <NavigationContainer>
         <MyStack />
       </NavigationContainer>
-=======
       <ToastProvider
         placement="top"
         duration={2000}
@@ -111,11 +104,10 @@ export default function App() {
         // icon={<AntDesign name="flag" size={20} color={'white'} />}
       >
         <NavigationContainer>
-          <StatusBar backgroundColor={"#fofof5"} barStyle="dark-content" />
+          {/* <StatusBar backgroundColor={"#fofof5"} barStyle="dark-content" /> */}
           <MyStack />
         </NavigationContainer>
       </ToastProvider>
->>>>>>> Stashed changes
     </View>
   );
 }
