@@ -95,11 +95,11 @@ function TodoList() {
       setShowYTranslate(true);
       // if (task.length > 4 && isScrolled < 1) {
       // if (showYTranslate) {
-        yTranslate.value = withSequence(
-          withTiming(-20, { duration: 500 }),
-          withRepeat(withTiming(0, { duration: 500 }), Infinity, true),
-          // withTiming(0, { duration: 500 })
-        );
+      yTranslate.value = withSequence(
+        withTiming(-20, { duration: 500 }),
+        withRepeat(withTiming(0, { duration: 500 }), Infinity, true)
+        // withTiming(0, { duration: 500 })
+      );
       // }
       // }
       // Promise.all[getUser(),getData()]
@@ -174,7 +174,7 @@ function TodoList() {
   };
   useEffect(() => {
     if (!filterVal) updateData(task);
-  }, [update, status,task]);
+  }, [update, status, task]);
 
   const onDelete = (index) => {
     // console.log("index", index);
@@ -241,22 +241,20 @@ function TodoList() {
     // cancelAnimation(yTranslate)
   }, [isScrolled]);
 
-  const toggle = useSharedValue(0)
+  const toggle = useSharedValue(0);
   const toggleAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform:[{translateX:toggle.value}]
-    }
-  })
+      transform: [{ translateX: toggle.value }],
+    };
+  });
 
   useEffect(() => {
     if (showStatusWise) {
-      toggle.value=withTiming(0,{duration:500})
+      toggle.value = withTiming(0, { duration: 500 });
+    } else {
+      toggle.value = withTiming(0, { duration: 500 });
     }
-    else {
-      toggle.value=withTiming(0,{duration:500})
-    }
-  },[showStatusWise])
-
+  }, [showStatusWise]);
 
   var swipeoutBtns = [
     {
@@ -315,26 +313,31 @@ function TodoList() {
               }}
               onPress={() => setShowStatusWise(!showStatusWise)}
             >
-              <Animated.View style={[toggleAnimatedStyle,{display: "flex",flexDirection: "row",gap: 10,}]}>
-              <MaterialIcons
-                name="menu-open"
-                size={20}
-                style={{
-                  backgroundColor: showStatusWise ? "white" : "#a3a3b9",
-                  padding: 2,
-                  borderRadius: 5,
-                }}
-              />
-              <FontAwesome
-                name="list-ul"
-                size={20}
-                style={{
-                  backgroundColor: showStatusWise ? "#a3a3b9" : "white",
-                  padding: 2,
-                  borderRadius: 5,
-                }}
-              />
-            </Animated.View>
+              <Animated.View
+                style={[
+                  toggleAnimatedStyle,
+                  { display: "flex", flexDirection: "row", gap: 10 },
+                ]}
+              >
+                <MaterialIcons
+                  name="menu-open"
+                  size={20}
+                  style={{
+                    backgroundColor: showStatusWise ? "white" : "#a3a3b9",
+                    padding: 2,
+                    borderRadius: 5,
+                  }}
+                />
+                <FontAwesome
+                  name="list-ul"
+                  size={20}
+                  style={{
+                    backgroundColor: showStatusWise ? "#a3a3b9" : "white",
+                    padding: 2,
+                    borderRadius: 5,
+                  }}
+                />
+              </Animated.View>
             </Pressable>
           </View>
           {/* Status wise filter */}

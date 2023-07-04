@@ -55,7 +55,7 @@ function Login() {
       if (currentUser) {
         if (currentUser.email === email && currentUser.password === password) {
           AsyncStorage.setItem('@user',JSON.stringify(currentUser))
-          navigation.navigate("Todo");
+          navigation.navigate("Home");
 
           //refresh the User Inputs
           setEmail("");
