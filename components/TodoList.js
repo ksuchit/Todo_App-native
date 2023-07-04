@@ -92,16 +92,15 @@ function TodoList() {
       setTimeout(() => {
         setLoading(false);
       }, 1000);
+      
+      if (task.length>4)
       setShowYTranslate(true);
-      // if (task.length > 4 && isScrolled < 1) {
-      // if (showYTranslate) {
+
       yTranslate.value = withSequence(
         withTiming(-20, { duration: 500 }),
         withRepeat(withTiming(0, { duration: 500 }), Infinity, true)
         // withTiming(0, { duration: 500 })
       );
-      // }
-      // }
       // Promise.all[getUser(),getData()]
       return () => {
         // Do something when the screen is unfocused
@@ -311,7 +310,10 @@ function TodoList() {
                 padding: 2,
                 borderRadius: 3,
               }}
-              onPress={() => setShowStatusWise(!showStatusWise)}
+              onPress={() => {
+                setShowStatusWise(!showStatusWise)
+                setShowYTranslate(true)
+              }}
             >
               <Animated.View
                 style={[
@@ -342,7 +344,7 @@ function TodoList() {
           </View>
           {/* Status wise filter */}
           {showStatusWise ? (
-            <StatusWiseFilter task={task} />
+            <StatusWiseFilter task={task} setShowYTranslate={setShowYTranslate}/>
           ) : (
             <ScrollView
               style={styles.todoContainer}

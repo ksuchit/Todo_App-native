@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Octicons from 'react-native-vector-icons/Octicons'
 
-function StatusWiseFilter({task}) {
+function StatusWiseFilter({task,setShowYTranslate}) {
     console.log("StatusWiseFilter",task.filter((data,i)=>data.status==="Pending"))
 
     const statusArray=["Pending","No Status","InProgress","Complete"]
@@ -37,8 +37,13 @@ function StatusWiseFilter({task}) {
       </View>
       )
     }
+
+    const handleScroll=(e)=>{
+      if(e.nativeEvent.contentOffset.y > 1)
+        setShowYTranslate(false)
+    }
   return (
-    <ScrollView >
+    <ScrollView onScroll={handleScroll} >
         {statusArray.map((status,index)=>
         <View key={index}>
         <View style={{display:'flex',justifyContent:'space-between',flexDirection:'row',backgroundColor:"#dadae3",paddingHorizontal:25,paddingVertical:5}}>
