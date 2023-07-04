@@ -30,7 +30,15 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Swipeout from "react-native-swipeout";
 import { Skeleton } from "@rneui/themed";
 import StatusWiseFilter from "./StatusWiseFilter";
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -45,7 +53,7 @@ function TodoList() {
   const [filterVal, setFilterVal] = useState(null);
   const [touchedTodo, setTouchedTodo] = useState(-1);
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showStatusWise, setShowStatusWise] = useState(false);
   const prevValue = useRef();
 
@@ -53,7 +61,7 @@ function TodoList() {
   const bgColor = bgColourIndex.interpolate({
     inputRange: [0, 300],
     outputRange: ["#c4c4cc", "#6d6d71"],
-  });  
+  });
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -68,22 +76,41 @@ function TodoList() {
     setParseData(parseData);
   };
 
+  const [showYTranslate, setShowYTranslate] = useState(true);
+  const yTranslate = useSharedValue(0);
+  const yAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: yTranslate.value }],
+    };
+  });
+
   useFocusEffect(
     useCallback(() => {
       // Do something when the screen is focused
       getUser();
       getData();
       setTimeout(() => {
-        setLoading(true);
+        setLoading(false);
       }, 1000);
+      setShowYTranslate(true);
+      // if (task.length > 4 && isScrolled < 1) {
+      // if (showYTranslate) {
+        yTranslate.value = withSequence(
+          withTiming(-20, { duration: 500 }),
+          withRepeat(withTiming(0, { duration: 500 }), Infinity, true),
+          // withTiming(0, { duration: 500 })
+        );
+      // }
+      // }
       // Promise.all[getUser(),getData()]
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
         setFilterVal(null);
         setTouchedTodo(-1);
-        setLoading(false);
+        setLoading(true);
         setShowStatusWise(false);
+        setShowYTranslate(false);
       };
     }, [])
   );
@@ -147,7 +174,7 @@ function TodoList() {
   };
   useEffect(() => {
     if (!filterVal) updateData(task);
-  }, [update, status]);
+  }, [update, status,task]);
 
   const onDelete = (index) => {
     // console.log("index", index);
@@ -193,26 +220,43 @@ function TodoList() {
     else setIsScrolled(e.nativeEvent.contentOffset.y);
   };
 
-  const scale = useSharedValue(0)
-  const rotation=useSharedValue(0)
+  const scale = useSharedValue(0);
+  const rotation = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-        {rotateZ:`${rotation.value}deg`}
-      ],
-    }
-  }, [])
+      transform: [{ scale: scale.value }, { rotateZ: `${rotation.value}deg` }],
+    };
+  }, []);
 
   useEffect(() => {
     prevValue.current = isScrolled;
-    scale.value = withSpring(1)
+    scale.value = withSpring(1);
     rotation.value = withSequence(
       withTiming(0, { duration: 100 }),
       withRepeat(withTiming(360, { duration: 500 }), 1, true),
-      // withTiming(0, { duration: 500 })
+      withTiming(0, { duration: 500 })
     );
+    if (showYTranslate) setShowYTranslate(false);
+
+    // cancelAnimation(yTranslate)
   }, [isScrolled]);
+
+  const toggle = useSharedValue(0)
+  const toggleAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform:[{translateX:toggle.value}]
+    }
+  })
+
+  useEffect(() => {
+    if (showStatusWise) {
+      toggle.value=withTiming(0,{duration:500})
+    }
+    else {
+      toggle.value=withTiming(0,{duration:500})
+    }
+  },[showStatusWise])
+
 
   var swipeoutBtns = [
     {
@@ -257,7 +301,7 @@ function TodoList() {
   return (
     <View style={{ backgroundColor: "#f0f0f5", height: "100%" }}>
       <SelectDropdown filterVal={filterVal} setFilterVal={setFilterVal} />
-      {loading ? (
+      {!loading ? (
         <>
           {/* total results and toggle filter */}
           {/* backgroundColor:'#dadae3', */}
@@ -267,13 +311,11 @@ function TodoList() {
               style={{
                 backgroundColor: "#a3a3b9",
                 padding: 2,
-                display: "flex",
-                flexDirection: "row",
-                gap: 10,
                 borderRadius: 3,
               }}
               onPress={() => setShowStatusWise(!showStatusWise)}
             >
+              <Animated.View style={[toggleAnimatedStyle,{display: "flex",flexDirection: "row",gap: 10,}]}>
               <MaterialIcons
                 name="menu-open"
                 size={20}
@@ -292,6 +334,7 @@ function TodoList() {
                   borderRadius: 5,
                 }}
               />
+            </Animated.View>
             </Pressable>
           </View>
           {/* Status wise filter */}
@@ -634,7 +677,12 @@ function TodoList() {
                       borderBottomWidth: StyleSheet.hairlineWidth,
                     }}
                   />
-                  <Skeleton animation="wave" height={20} width={100} style={{marginBottom:8}} />
+                  <Skeleton
+                    animation="wave"
+                    height={20}
+                    width={100}
+                    style={{ marginBottom: 8 }}
+                  />
                 </View>
               </View>
             ))}
@@ -653,6 +701,14 @@ function TodoList() {
                 // color={"grey"}
               />
             </TouchableOpacity>
+          </Animated.View>
+        </View>
+      )}
+
+      {showYTranslate && !loading && (
+        <View style={{ position: "absolute", bottom: 0, right: "46%" }}>
+          <Animated.View style={yAnimatedStyle}>
+            <Ionicons name="md-chevron-down-circle" size={30} color={"grey"} />
           </Animated.View>
         </View>
       )}
