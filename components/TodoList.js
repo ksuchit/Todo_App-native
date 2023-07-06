@@ -93,7 +93,8 @@ function TodoList() {
         setLoading(false);
       }, 1000);
       
-      if (task.length>4)
+      //we have to put below code in useEffect with task as dependenacy so that we can check every time.
+      // if (task.length>4)
       setShowYTranslate(true);
 
       yTranslate.value = withSequence(
