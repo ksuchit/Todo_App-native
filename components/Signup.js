@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { LoginButton } from "./Button";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useToast } from "react-native-toast-notifications";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -22,6 +23,8 @@ function Signup() {
   const [users, setUsers] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
+
+  const toast = useToast();
 
   const getRegisteredUsers = async () => {
     const user = await AsyncStorage.getItem("@reg-user");
@@ -40,7 +43,11 @@ function Signup() {
   const onSubmit = async () => {
     console.log("onSubmit");
     setSubmit(true);
-    if (
+    
+    const isAlredyRegistered= users.find((item) => item.email === email)
+    if (isAlredyRegistered)
+      toast.show("User Already Registered",{type:'danger'})
+    else if (
       email &&
       password &&
       name &&
@@ -59,7 +66,8 @@ function Signup() {
           JSON.stringify([{ email, password, name }])
         );
 
-      Alert.alert("success", "registered");
+      // Alert.alert("success", "registered");
+      toast.show("Successfully Registered",{type:'success'})
       navigation.navigate("Login");
 
       //refresh the users Input

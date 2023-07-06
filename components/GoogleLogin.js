@@ -9,6 +9,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Button } from "./Button";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useToast } from "react-native-toast-notifications";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -23,6 +24,8 @@ function GoogleLogin() {
     // iosClientId:
     //   "810487334175-4q6gs01gfb2nmq8ih0tmqjeh0smqai2m.apps.googleusercontent.com",
   });
+
+  const toast = useToast();
 
   useEffect(() => {
     handleSignInWithGoogle();
@@ -52,6 +55,7 @@ function GoogleLogin() {
       const user = await response.json();
       await AsyncStorage.setItem("@user", JSON.stringify(user));
       setUserInfo(user);
+      toast.show("SuccessFully LogIn",{type:'success'})
       navigation.navigate("Todo");
     } catch (error) {
       // Add your own error handler here

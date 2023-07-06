@@ -90,7 +90,7 @@ export default function App() {
     <View style={styles.container}>
       <ToastProvider
         placement="top"
-        duration={2000}
+        duration={1000}
         offset={100}
         animationDuration={250}
         animationType="zoom-in"

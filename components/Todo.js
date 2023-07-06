@@ -65,6 +65,26 @@ function Todo() {
     }
   })
 
+  const bottomSheet = useSharedValue(0);
+  const bottomSheetOpacity=useSharedValue(0)
+  const bottomAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: bottomSheet.value }],
+      opacity:bottomSheetOpacity.value
+    }
+  })
+
+  useEffect(() => {
+    if(show){
+      bottomSheet.value = withTiming(-230, { duration: 1000 })
+      bottomSheetOpacity.value=withTiming(1,{duration:1500})
+    }
+    else {
+      bottomSheet.value= withTiming(0)
+      bottomSheetOpacity.value= withTiming(0)
+    }
+  },[show])
+
   useFocusEffect(
     useCallback(() => {
       getUserFromStorage();
@@ -193,7 +213,6 @@ function Todo() {
 
   console.log("latestTask", latestTask);
   return (
-    <View behavior="padding" style={{ flex: 1 }}>
       <Pressable
         onPress={() => {
           setShow(false);
@@ -202,8 +221,9 @@ function Todo() {
           setStared(false);
         }}
       >
-        <View style={show ? styles.containerShow : styles.containerHide}>
-          {latestTask?.title && !show ? (
+        <View style={{backgroundColor:'#f0f0f5',height:"100%"}}>
+          {latestTask?.title && !show && 
+          <View style={styles.containerHide}>
             <View style={styles.task}>
               <Text style={{ marginBottom: 10, fontSize: 20, fontWeight: 700 }}>
                 Recent Task...
@@ -246,12 +266,11 @@ function Todo() {
                 />
               </Pressable>
             </View>
-          ) : (
-            ""
-          )}
-
+          </View>
+          }
+       
           {show ? (
-            <View>
+            <Animated.View style={[bottomAnimatedStyle,styles.containerShow]}>
               {/* <View style={styles.head}>
                 <Text style={styles.heading}>Welcome to Todo</Text>
               </View> */}
@@ -321,45 +340,41 @@ function Todo() {
                   <Text>ADD TASK</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </Animated.View>
           ) : (
-            <View>
-              <Animated.View style={animatedStyle}>
+             <Animated.View style={[animatedStyle,styles.addTaskBtn]}>
                 <TouchableOpacity
-                  style={styles.addTaskBtn}
                   onPress={() => setShow(true)}
                 >
                   <MaterialCommunityIcons name="plus" size={30} />
                 </TouchableOpacity>
-              </Animated.View>
-            </View>
-          )}
+               </Animated.View>
+        )}
         </View>
       </Pressable>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerHide: {
     padding: 25,
-    backgroundColor: "#f0f0f5",
-    height: "100%",
+    // height: "100%",
     display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
+    justifyContent: "center",
+    alignItems: "center",
   },
   containerShow: {
     padding: 25,
     backgroundColor: "#dadae3", //#dadae3 #f0f0f5
+    width:'100%',
     // height: "100%",
-    // position: 'absolute',
-    // bottom:0,
+    position: 'absolute',
+    bottom:0,
     display: "flex",
-    justifyContent: "flex-end",
+    // justifyContent: "flex-end",
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
-    top: "37%",
+    // top: "37%",
   },
   updateContainer: {
     borderWidth: 2,
@@ -456,9 +471,13 @@ const styles = StyleSheet.create({
   addTaskBtn: {
     backgroundColor: "#c0c0c0", //#dadae3
     padding: 10,
+    margin: 25,
     borderRadius: 10,
     color: "grey",
-    // width: 50,
+    width: 50,
+    position:'absolute',
+    bottom: 0,
+    right:0
   },
   addTaskBtnDisabled: {
     backgroundColor: "grey",

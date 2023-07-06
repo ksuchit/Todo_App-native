@@ -5,6 +5,7 @@ import GoogleLogin from "./GoogleLogin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginButton } from "./Button";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { useToast } from "react-native-toast-notifications";
 // import { Button } from "./Button";
 
 function Login() {
@@ -14,6 +15,8 @@ function Login() {
   const [users, setUsers] = useState([]);
   const [showPassword,setShowPassword]=useState(false)
   const navigation = useNavigation();
+
+  const toast = useToast();
 
   const isAlredyThere = async () => {
     const user = await AsyncStorage.getItem("@user");
@@ -62,10 +65,13 @@ function Login() {
           setPassword("");
         } else {
           if (email && password)
-            Alert.alert("Failed", "Email or password does not match");
+            toast.show("Email or password does not match",{type:'warning'})
+            // Alert.alert("Failed", "Email or password does not match");
         }
       } else {
-        if (email && password) Alert.alert("Failed", "User not Found");
+        if (email && password)
+          toast.show("User not Found",{type:'danger'})
+          // Alert.alert("Failed", "User not Found");
       }
     } catch (error) {
       console.log("Submit error",error)
