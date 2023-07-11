@@ -57,8 +57,9 @@ function Login() {
       console.log("user",currentUser)
       if (currentUser) {
         if (currentUser.email === email && currentUser.password === password) {
-          AsyncStorage.setItem('@user',JSON.stringify(currentUser))
-          navigation.navigate("Home");
+          AsyncStorage.setItem('@user', JSON.stringify(currentUser))
+          toast.show("Successfully Login",{type:'success'})
+          navigation.navigate("Todo");
 
           //refresh the User Inputs
           setEmail("");

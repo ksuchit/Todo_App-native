@@ -39,6 +39,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useToast } from "react-native-toast-notifications";
 
 function TodoList() {
   const [task, setTask] = useState([]);
@@ -56,6 +57,7 @@ function TodoList() {
   const [loading, setLoading] = useState(true);
   const [showStatusWise, setShowStatusWise] = useState(false);
   const prevValue = useRef();
+  const toast=useToast()
 
   const bgColourIndex = useRef(new Animated.Value(0)).current;
   const bgColor = bgColourIndex.interpolate({
@@ -174,6 +176,10 @@ function TodoList() {
   };
   useEffect(() => {
     if (!filterVal) updateData(task);
+
+    if (task.length < 5)
+      setShowYTranslate(false)
+    
   }, [update, status, task]);
 
   const onDelete = (index) => {
@@ -275,8 +281,23 @@ function TodoList() {
     },
   ];
 
+  const starScale = useSharedValue(1)
+  const starRotateValue=useSharedValue(0)
+  const starAnimatedValue = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: starScale.value } ,{rotateZ:`${starRotateValue.value}deg`}]
+    }
+  })
+
   const onStarPressed = async (index) => {
     console.log("star pressed", index);
+    starScale.value = 2
+    starRotateValue.value = withSequence(
+      withTiming(-60, { duration: 500 }),
+      withTiming(60, { duration: 500 }),
+      withTiming(0,{duration:500})
+    )
+    starScale.value=1
     const data = await AsyncStorage.getItem("todo");
     const parseData = JSON.parse(data);
     // console.log("parseData",parseData)
@@ -398,12 +419,9 @@ function TodoList() {
                                 setUDetails("");
                                 setUTitle("");
 
-                                Alert.alert("Success", "Successfully Updated");
+                                toast.show("Successfully Updated",{type:'success'})
                               } else {
-                                Alert.alert(
-                                  "Warning",
-                                  "Empty fields not Allowed"
-                                );
+                                toast.show("Empty fields not Allowed",{type:'warning'})
                               }
                             }}
                             title="UPDATE"
@@ -441,12 +459,13 @@ function TodoList() {
                           }}
                         >
                           {data.stared ? (
-                            <View
-                              style={{
+                            <Animated.View
+                              style={[{
                                 backgroundColor: "#f0f0f5",
                                 borderRadius: 10,
                                 padding: 2,
-                              }}
+                                zIndex:1
+                              },starAnimatedValue]}
                             >
                               <FontAwesome
                                 name="star"
@@ -454,7 +473,7 @@ function TodoList() {
                                 color={"#de9d10"}
                                 onPress={() => onStarPressed(index)}
                               />
-                            </View>
+                            </Animated.View>
                           ) : (
                             <View
                               style={{
@@ -589,7 +608,7 @@ function TodoList() {
                       name="add-task"
                       size={30}
                       color="#2196F3"
-                      onPress={() => navigation.navigate("Todo")}
+                      onPress={() => navigation.navigate("Home")}
                     />
                   </Pressable>
                 </View>

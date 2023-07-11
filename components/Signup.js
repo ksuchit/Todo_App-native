@@ -44,7 +44,7 @@ function Signup() {
     console.log("onSubmit");
     setSubmit(true);
     
-    const isAlredyRegistered= users.find((item) => item.email === email)
+    const isAlredyRegistered= users?.find((item) => item.email === email)
     if (isAlredyRegistered)
       toast.show("User Already Registered",{type:'danger'})
     else if (
