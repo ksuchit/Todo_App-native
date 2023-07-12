@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { StackActions, useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Onboarding from "react-native-onboarding-swiper";
@@ -46,8 +46,9 @@ function OnboardingScreens() {
       bottomBarHeight={70}
       titleStyles={{ fontWeight: "600" }}
       subTitleStyles={{ color: "grey" }}
-      onSkip={() => navigation.navigate("Auth")}
-      onDone={() => navigation.navigate("Welcome")}
+      onSkip={() => navigation.dispatch(StackActions.replace("Auth"))}
+          onDone={() => navigation.dispatch(StackActions.replace("Welcome"))}
+
       pages={[
         {
           backgroundColor: "#fff",

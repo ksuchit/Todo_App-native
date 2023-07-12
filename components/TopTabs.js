@@ -6,7 +6,7 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function MyTabs() {
   return (
-    <Tab.Navigator style={{ marginTop: 30 }}
+    <Tab.Navigator
       screenOptions={{
         tabBarStyle: { backgroundColor: "#f0f0f5" },
         tabBarLabelStyle:{fontWeight:500}

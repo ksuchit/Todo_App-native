@@ -1,4 +1,4 @@
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { StackActions, useFocusEffect, useNavigation } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import GoogleLogin from "./GoogleLogin";
@@ -59,7 +59,8 @@ function Login() {
         if (currentUser.email === email && currentUser.password === password) {
           AsyncStorage.setItem('@user', JSON.stringify(currentUser))
           toast.show("Successfully Login",{type:'success'})
-          navigation.navigate("Todo");
+          // navigation.navigate("Todo");
+          navigation.dispatch(StackActions.replace("Todo"))
 
           //refresh the User Inputs
           setEmail("");

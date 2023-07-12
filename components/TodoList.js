@@ -238,7 +238,7 @@ function TodoList() {
     prevValue.current = isScrolled;
     scale.value = withSpring(1);
     rotation.value = withSequence(
-      withTiming(0, { duration: 100 }),
+      // withTiming(0, { duration: 100 }),
       withRepeat(withTiming(360, { duration: 500 }), 1, true),
       withTiming(0, { duration: 500 })
     );

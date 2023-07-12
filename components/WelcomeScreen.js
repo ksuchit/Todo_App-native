@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "./Button";
+import { StackActions } from "@react-navigation/native";
 
 function WelcomeScreen({ navigation }) {
   return (
@@ -10,7 +11,7 @@ function WelcomeScreen({ navigation }) {
           Please login to your account or create new account to continue
         </Text>
       </View>
-      <TouchableOpacity style={styles.buttons} onPress={() => navigation.navigate("Auth")}>
+      <TouchableOpacity style={styles.buttons} onPress={() => navigation.dispatch(StackActions.replace("Auth"))}>
         <Text style={{color:'white',fontSize:20,fontWeight:500}}>Login</Text>
       </TouchableOpacity>
     </View>

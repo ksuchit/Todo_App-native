@@ -116,6 +116,7 @@ function Signup() {
             <Text style={styles.label}>Password</Text>
             <TextInput
               editable
+              secureTextEntry
               style={styles.inputBox}
               placeholder="Enter Password"
               value={password}
