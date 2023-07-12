@@ -331,7 +331,10 @@ function Todo() {
                 <TouchableOpacity
                   style={
                     title && details
-                      ? styles.addTaskBtn
+                      ? {backgroundColor: "#c0c0c0", //#dadae3
+                      padding: 10,
+                      borderRadius: 10,
+                      color: "grey"}
                       : styles.addTaskBtnDisabled
                   }
                   onPress={addTodo}
@@ -471,10 +474,10 @@ const styles = StyleSheet.create({
   addTaskBtn: {
     backgroundColor: "#c0c0c0", //#dadae3
     padding: 10,
-    margin: 25,
     borderRadius: 10,
     color: "grey",
-    width: 50,
+    // width: 50,
+    margin: 25,
     position:'absolute',
     bottom: 0,
     right:0

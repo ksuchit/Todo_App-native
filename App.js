@@ -19,6 +19,7 @@ import { DrawerContentScrollView, DrawerItem, DrawerItemList, createDrawerNaviga
 import HomeTopTabs from "./components/HomeTopTabs";
 import Todo from "./components/Todo";
 import OnboardingScreens from "./components/OnboardingScreens";
+import WelcomeScreen from "./components/WelcomeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -118,6 +119,11 @@ function MyStack() {
         name="OnBoarding"
         component={OnboardingScreens}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Welcome"
+        component={WelcomeScreen}
+        options={{headerShown:false}}
       />
       <Stack.Screen
         name="Auth"

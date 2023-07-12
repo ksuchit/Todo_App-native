@@ -57,7 +57,7 @@ function TodoList() {
   const [loading, setLoading] = useState(true);
   const [showStatusWise, setShowStatusWise] = useState(false);
   const prevValue = useRef();
-  const toast=useToast()
+  const toast = useToast()
 
   const bgColourIndex = useRef(new Animated.Value(0)).current;
   const bgColor = bgColourIndex.interpolate({
@@ -471,7 +471,9 @@ function TodoList() {
                                 name="star"
                                 size={20}
                                 color={"#de9d10"}
-                                onPress={() => onStarPressed(index)}
+                                  onPress={() => {
+                                    onStarPressed(index)
+                                  }}
                               />
                             </Animated.View>
                           ) : (
