@@ -8,7 +8,7 @@ export default function MyTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: { backgroundColor: "#f0f0f5" },
+        tabBarStyle: { backgroundColor: "#f0f0f5" ,paddingTop:30},
         tabBarLabelStyle:{fontWeight:500}
       }}
     >

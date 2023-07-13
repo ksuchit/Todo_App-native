@@ -1,15 +1,28 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, SectionList, StyleSheet, Text, View } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
 
 function StatusWiseFilter({ task, setShowYTranslate }) {
-  console.log(
-    "StatusWiseFilter",
-    task.filter((data, i) => data.status === "Pending")
-  );
+  // console.log(
+  //   "StatusWiseFilter",
+  //   task.filter((data, i) => data.status === "Pending")
+  // );
 
   const statusArray = ["Pending", "No Status", "InProgress", "Complete"];
+
+  const DATA = statusArray.map((status) => {
+    return {
+      title: status,
+      data: task.filter((item) => item.status === status)
+    };
+  });
+  console.log("DATA", DATA);
+  
+  //  DATA.map((item) => {
+  //   console.log(item)
+  //   return item
+  // })
   const filterWiseData = (data, i) => {
     return (
       <View style={styles.task} key={i}>
@@ -47,7 +60,41 @@ function StatusWiseFilter({ task, setShowYTranslate }) {
     if (e.nativeEvent.contentOffset.y > 1) setShowYTranslate(false);
   };
   return (
-    <ScrollView onScroll={handleScroll}>
+    <>
+      <SectionList
+        onScroll={handleScroll}
+        sections={DATA}
+        keyExtractor={(item, index) => item.title + index}
+        renderSectionHeader={({ section: {title} }) => (  //title as whole object so used destructuring...
+            task.filter((data) => data.status === title).length > 0 &&
+              <View
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  backgroundColor: "#dadae3",
+                  paddingHorizontal: 25,
+                paddingVertical: 5,
+                }}
+              >
+                {/* {console.log("title",title)} */}
+
+                <Text>{title}</Text>
+                <View style={{ display: "flex", flexDirection: "row", gap: 5 }}>
+                  <Octicons name="tasklist" size={15} />
+                  <Text>{task.filter((data) => data.status === title).length}</Text>
+                </View>
+              </View>
+        )}
+        stickySectionHeadersEnabled={true}
+        renderItem={({ item, index }) => (
+          <View style={[{ paddingHorizontal: 25, paddingBottom: 25 },index===0 ? {paddingTop:25} : {paddingTop:0}]}>
+            {filterWiseData(item, index)}
+          </View>
+        )}
+      />
+
+      {/* <ScrollView onScroll={handleScroll}>
       {statusArray.map((status, index) => (
         <View key={index}>
         {task.filter((data) => data.status === status).length > 0 && <>
@@ -74,24 +121,13 @@ function StatusWiseFilter({ task, setShowYTranslate }) {
                 {task
                   .filter((data, i) => data.status === status)
                   ?.map((data, i) => filterWiseData(data, i))}
-                {/* {task.filter((data,i)=>data.status==='No Status')?.map((data,i)=>
-           filterWiseData(data,i)
-
-       )}
-       {task.filter((data,i)=>data.status==='InProgress')?.map((data,i)=>
-            filterWiseData(data,i)
-
-       )}
-       {task.filter((data,i)=>data.status==='Complete')?.map((data,i)=>
-            filterWiseData(data,i)
-
-       )} */}
             </View>
             </>
         }
             </View>
       ))}
-    </ScrollView>
+      </ScrollView> */}
+    </>
   );
 }
 
@@ -113,7 +149,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     borderColor: "thistle",
     padding: 20,
-    marginTop: 25,
+    // marginTop: 25,
     borderRadius: 10,
     width: "100%",
     backgroundColor: "#dadae3",
