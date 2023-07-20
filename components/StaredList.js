@@ -2,6 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import {
+  Image,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,15 +19,19 @@ function StaredList() {
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("@user");
-    const parserdUser = JSON.parse(user);
+    const parserdUser = await JSON.parse(user);
+    console.log("getUser",parserdUser)
     setUser(parserdUser.email);
+    getData(parserdUser.email)
   };
 
-  const getData = async () => {
+  const getData = async (user) => {
+    console.log("getdata called")
     const data = await AsyncStorage.getItem("todo");
     const parseData = JSON.parse(data);
+    console.log("getdata",parseData,user)
     if (parseData.length > 0) {
-      await parseData.map((item) => {
+       parseData.map((item) => {
         if (Object.keys(item)[0] === user)
           setList(() => item[user].filter((obj) => obj.stared === true));
       });
@@ -35,10 +41,10 @@ function StaredList() {
 useFocusEffect(
   useCallback(()=>{
   getUser();
-  getData();
+  // getData();
   setTimeout(()=>{
     setLoading(true)
-  },1000)
+  },5000)
 
   console.log("useFocus in StarList")
   return()=>{
@@ -75,8 +81,9 @@ console.log("loadingStared",loading)
   };
 
   console.log("staredList", list);
+  const image = {uri: 'https://legacy.reactjs.org/logo-og.png'};
   return (
-    <ScrollView>
+    <ScrollView style={{display:'flex',flex:1}}>
       {loading ?
       <View style={styles.container}>
         {list.map((data, i) => (
@@ -110,8 +117,18 @@ console.log("loadingStared",loading)
           </View>
         ))}
       </View>
-      :
-      <Text>Loading...</Text> 
+        :
+        <>
+          <ImageBackground source={{ uri: 'https://www.whoa.in/download/photoshoot-love-heart-created-by-young-couple-hand-hd-images-photos-fb-images-free-download' }} resizeMode="cover"
+            style={{height:'100%'}}
+          >
+      <Text >Inside</Text>
+    </ImageBackground>
+        {/* <Image source={{ uri: 'https://www.whoa.in/download/photoshoot-love-heart-created-by-young-couple-hand-hd-images-photos-fb-images-free-download' }}
+        style={{ height: "100%", width: 170, borderRadius: 100 }}
+        />  */}
+        {/* <iframe src="https://giphy.com/embed/hL9q5k9dk9l0wGd4e0" width="480" height="318" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/loading-vera-verreschi-hL9q5k9dk9l0wGd4e0">via GIPHY</a></p> */}
+          </>
       }
     </ScrollView>
   );
